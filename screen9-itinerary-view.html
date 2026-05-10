@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – Itinerary View</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#1a3c5e;--accent:#e8a87c;--light:#f7f4ef;--white:#fff;--gray:#6b7280;--border:#e5e0d8;--green:#4caf80;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);}
+  nav{background:var(--primary);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav .logo{color:var(--accent);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-decoration:none;}
+  nav a{color:#ccd6e0;text-decoration:none;font-size:.9rem;margin-left:20px;}
+  nav a:hover{color:var(--accent);}
+  .trip-banner{background:linear-gradient(135deg,var(--primary) 0%,#2d6a9f 100%);padding:36px 40px;color:var(--white);}
+  .trip-banner h1{font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:6px;}
+  .trip-banner p{opacity:.8;margin-bottom:18px;}
+  .banner-stats{display:flex;gap:28px;}
+  .banner-stat .label{font-size:.75rem;opacity:.7;margin-bottom:2px;}
+  .banner-stat .value{font-size:1rem;font-weight:600;}
+  .action-bar{background:var(--white);border-bottom:1.5px solid var(--border);padding:12px 40px;display:flex;gap:12px;align-items:center;}
+  .btn{padding:10px 22px;border-radius:10px;font-size:.88rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;}
+  .btn-accent{background:var(--accent);color:var(--white);}
+  .btn-primary{background:var(--primary);color:var(--white);}
+  .btn-outline{background:none;border:2px solid var(--primary);color:var(--primary);}
+  .container{max-width:1100px;margin:0 auto;padding:28px 24px 80px;}
+  .city-nav{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+  .city-pill{padding:8px 20px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:.87rem;cursor:pointer;transition:.2s;}
+  .city-pill.active{background:var(--primary);color:var(--white);border-color:var(--primary);}
+  .main-grid{display:grid;grid-template-columns:1fr 340px;gap:24px;}
+  /* Left: Days */
+  .day-card{background:var(--white);border-radius:16px;margin-bottom:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+  .day-card-header{background:var(--primary);color:var(--white);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;}
+  .day-card-header h3{font-family:'Playfair Display',serif;font-size:1rem;}
+  .day-card-header span{font-size:.8rem;opacity:.75;}
+  .timeline{padding:18px 20px;}
+  .time-item{display:flex;gap:14px;margin-bottom:18px;position:relative;}
+  .time-item:not(:last-child):before{content:'';position:absolute;left:31px;top:32px;width:2px;height:calc(100% - 4px);background:var(--border);}
+  .time-dot{width:20px;height:20px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:white;z-index:1;}
+  .time-label{font-size:.78rem;color:var(--gray);min-width:46px;margin-top:6px;font-weight:500;}
+  .act-content{flex:1;}
+  .act-title{font-weight:600;font-size:.92rem;margin-bottom:3px;}
+  .act-meta{font-size:.8rem;color:var(--gray);}
+  .act-cost-tag{display:inline-block;background:var(--light);padding:2px 10px;border-radius:12px;font-size:.76rem;color:var(--primary);font-weight:600;margin-top:4px;}
+  .act-icon-big{font-size:1.3rem;margin-top:4px;}
+  /* Right: Budget panel */
+  .budget-panel{position:sticky;top:20px;}
+  .budget-card{background:var(--white);border-radius:16px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:18px;}
+  .budget-card h3{font-family:'Playfair Display',serif;font-size:1rem;color:var(--primary);margin-bottom:14px;}
+  .budget-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .bs-item{background:var(--light);border-radius:12px;padding:12px;}
+  .bs-item .bs-val{font-size:1.1rem;font-weight:700;color:var(--primary);font-family:'Playfair Display',serif;}
+  .bs-item .bs-label{font-size:.75rem;color:var(--gray);}
+  .cat-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .cat-icon{font-size:1.1rem;width:24px;}
+  .cat-label{flex:1;font-size:.85rem;}
+  .cat-bar-wrap{width:80px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+  .cat-bar{height:100%;background:var(--accent);border-radius:3px;}
+  .cat-amount{font-size:.82rem;color:var(--primary);font-weight:600;width:60px;text-align:right;}
+  .checklist-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:.88rem;}
+  .checklist-item:last-child{border-bottom:none;}
+  .checklist-item input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px;}
+  .checklist-item.done{text-decoration:line-through;color:var(--gray);}
+  .share-btn{display:flex;align-items:center;gap:8px;padding:12px 18px;background:var(--light);border-radius:12px;border:1.5px solid var(--border);cursor:pointer;width:100%;font-size:.88rem;font-weight:600;transition:.2s;}
+  .share-btn:hover{border-color:var(--accent);background:#fff8f0;}
+  @media(max-width:768px){.main-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="screen3-dashboard.html">✈ Traveloop</a>
+  <div>
+    <a href="screen3-dashboard.html">Dashboard</a>
+    <a href="screen6-my-trips.html">My Trips</a>
+    <a href="screen5-itinerary-builder.html">Edit</a>
+    <a href="screen7-profile.html">Profile</a>
+  </div>
+</nav>
+
+<div class="trip-banner" id="tripBanner">
+  <h1 id="bannerTitle">My Trip</h1>
+  <p id="bannerSub">Loading trip details...</p>
+  <div class="banner-stats">
+    <div class="banner-stat"><div class="label">Duration</div><div class="value" id="bannerDays">–</div></div>
+    <div class="banner-stat"><div class="label">Cities</div><div class="value" id="bannerCities">–</div></div>
+    <div class="banner-stat"><div class="label">Budget</div><div class="value" id="bannerBudget">–</div></div>
+    <div class="banner-stat"><div class="label">Status</div><div class="value" id="bannerStatus">Active</div></div>
+  </div>
+</div>
+
+<div class="action-bar">
+  <button class="btn btn-primary" onclick="window.location.href='screen5-itinerary-builder.html'">✏ Edit Itinerary</button>
+  <button class="btn btn-accent" onclick="window.location.href='screen14-invoice.html'">🧾 View Invoice</button>
+  <button class="btn btn-outline" onclick="shareTrip()">🔗 Share Trip</button>
+  <button class="btn btn-outline" onclick="window.location.href='screen11-packing.html'">🧳 Packing List</button>
+</div>
+
+<div class="container">
+  <div class="city-nav" id="cityNav"></div>
+  <div class="main-grid">
+    <div id="itineraryLeft"></div>
+    <div class="budget-panel" id="budgetPanel"></div>
+  </div>
+</div>
+
+<script>
+  let trip = null;
+  let itinerary = {};
+  let currentCity = 0;
+
+  function init() {
+    trip = JSON.parse(localStorage.getItem('traveloop_current_trip') || 'null');
+    itinerary = JSON.parse(localStorage.getItem('traveloop_itinerary') || '{}');
+    if (!trip) {
+      trip = { name: 'Europe Summer 2025', startDate: '2025-06-01', endDate: '2025-06-15', cities: [{city:'Paris',country:'France',arrival:'2025-06-01',departure:'2025-06-04',budget:20000},{city:'Rome',country:'Italy',arrival:'2025-06-04',departure:'2025-06-07',budget:18000}], totalBudget: 80000, status: 'active' };
+      itinerary = {
+        'Paris': [
+          { date: 'June 1', activities: [{type:'🏛 Sightseeing', name:'Eiffel Tower', cost:500, time:'09:00'},{type:'🍽 Meal', name:'Lunch at Café de Paris', cost:800, time:'13:00'},{type:'🛍 Shopping', name:'Champs-Élysées', cost:2000, time:'16:00'}] },
+          { date: 'June 2', activities: [{type:'🏛 Sightseeing', name:'Louvre Museum', cost:600, time:'10:00'},{type:'🍽 Meal', name:'Dinner Cruise', cost:1500, time:'19:00'}] }
+        ],
+        'Rome': [
+          { date: 'June 4', activities: [{type:'🏛 Sightseeing', name:'Colosseum', cost:700, time:'09:00'},{type:'🍽 Meal', name:'Pasta at Trastevere', cost:600, time:'14:00'}] }
+        ]
+      };
+    }
+    renderBanner();
+    renderCityNav();
+    selectCity(0);
+  }
+
+  function renderBanner() {
+    document.getElementById('bannerTitle').textContent = trip.name;
+    document.getElementById('bannerSub').textContent = `${trip.startDate} → ${trip.endDate}`;
+    const days = trip.startDate && trip.endDate ? Math.round((new Date(trip.endDate)-new Date(trip.startDate))/(1000*60*60*24)) : '–';
+    document.getElementById('bannerDays').textContent = days + ' days';
+    document.getElementById('bannerCities').textContent = (trip.cities||[]).length;
+    document.getElementById('bannerBudget').textContent = trip.totalBudget ? '₹' + Number(trip.totalBudget).toLocaleString() : '–';
+    document.getElementById('bannerStatus').textContent = (trip.status || 'active').charAt(0).toUpperCase() + (trip.status||'active').slice(1);
+  }
+
+  function renderCityNav() {
+    const nav = document.getElementById('cityNav');
+    (trip.cities || []).forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'city-pill' + (i === 0 ? ' active' : '');
+      btn.textContent = `📍 ${c.city}`;
+      btn.onclick = () => selectCity(i);
+      nav.appendChild(btn);
+    });
+  }
+
+  function selectCity(i) {
+    currentCity = i;
+    document.querySelectorAll('.city-pill').forEach((p, idx) => p.classList.toggle('active', idx === i));
+    const city = trip.cities[i];
+    renderItinerary(city);
+    renderBudgetPanel(city);
+  }
+
+  function renderItinerary(city) {
+    const left = document.getElementById('itineraryLeft');
+    left.innerHTML = '';
+    const days = itinerary[city.city] || [];
+    if (!days.length) {
+      left.innerHTML = '<p style="color:var(--gray);padding:20px">No activities added yet. <a href="screen5-itinerary-builder.html" style="color:var(--accent)">Edit Itinerary →</a></p>';
+      return;
+    }
+    days.forEach((day, di) => {
+      const card = document.createElement('div');
+      card.className = 'day-card';
+      const acts = day.activities || [];
+      const dayCost = acts.reduce((a,b) => a + Number(b.cost||0), 0);
+      card.innerHTML = `
+        <div class="day-card-header">
+          <h3>Day ${di+1} ${day.date ? '– ' + day.date : ''}</h3>
+          <span>Total: ₹${dayCost.toLocaleString()} &nbsp;|&nbsp; ${acts.length} activities</span>
+        </div>
+        <div class="timeline">
+          ${acts.map(a => `
+            <div class="time-item">
+              <span class="time-label">${a.time||''}</span>
+              <div class="time-dot">●</div>
+              <span class="act-icon-big">${getIcon(a.type)}</span>
+              <div class="act-content">
+                <div class="act-title">${a.name}</div>
+                <div class="act-meta">${a.type}</div>
+                ${a.cost ? `<span class="act-cost-tag">₹${Number(a.cost).toLocaleString()}</span>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      left.appendChild(card);
+    });
+  }
+
+  function getIcon(type) {
+    const map = {'🍽 Meal':'🍽','🏛 Sightseeing':'🏛','🛍 Shopping':'🛍','🚗 Transport':'🚗','🏨 Hotel':'🏨','🎭 Activity':'🎭','🌿 Nature':'🌿','☕ Café':'☕'};
+    return map[type] || '📍';
+  }
+
+  function renderBudgetPanel(city) {
+    const panel = document.getElementById('budgetPanel');
+    const days = itinerary[city.city] || [];
+    const allActs = days.flatMap(d => d.activities || []);
+    const totalSpent = allActs.reduce((a,b) => a + Number(b.cost||0), 0);
+    const budget = Number(city.budget || trip.totalBudget || 0);
+    const remaining = budget - totalSpent;
+    // Category breakdown
+    const cats = {};
+    allActs.forEach(a => { if(!cats[a.type]) cats[a.type]=0; cats[a.type] += Number(a.cost||0); });
+    const catRows = Object.entries(cats).map(([k,v]) => {
+      const pct = budget ? Math.min(100, Math.round((v/budget)*100)) : 0;
+      return `<div class="cat-row"><span class="cat-icon">${getIcon(k)}</span><span class="cat-label">${k.split(' ').slice(1).join(' ')}</span><div class="cat-bar-wrap"><div class="cat-bar" style="width:${pct}%"></div></div><span class="cat-amount">₹${v.toLocaleString()}</span></div>`;
+    }).join('');
+
+    panel.innerHTML = `
+      <div class="budget-card">
+        <h3>💰 Budget Overview</h3>
+        <div class="budget-summary">
+          <div class="bs-item"><div class="bs-val">₹${Number(budget).toLocaleString()}</div><div class="bs-label">Total Budget</div></div>
+          <div class="bs-item"><div class="bs-val">₹${totalSpent.toLocaleString()}</div><div class="bs-label">Spent</div></div>
+          <div class="bs-item"><div class="bs-val" style="color:${remaining>=0?'var(--green)':'#e05c5c'}">₹${Math.abs(remaining).toLocaleString()}</div><div class="bs-label">${remaining>=0?'Remaining':'Over budget'}</div></div>
+          <div class="bs-item"><div class="bs-val">${allActs.length}</div><div class="bs-label">Activities</div></div>
+        </div>
+        ${catRows ? `<h3 style="font-size:.85rem;color:var(--gray);margin-bottom:10px">By Category</h3>${catRows}` : '<p style="font-size:.85rem;color:var(--gray)">No activities yet.</p>'}
+      </div>
+      <div class="budget-card">
+        <h3>🧳 Quick Checklist</h3>
+        <div id="checklistItems">
+          ${['Passport / ID','Flight tickets','Hotel booking','Travel insurance','Local currency','Adaptor / charger','Medications'].map(item=>`
+            <label class="checklist-item"><input type="checkbox"> ${item}</label>
+          `).join('')}
+        </div>
+      </div>
+      <button class="share-btn" onclick="shareTrip()">🔗 Share this itinerary</button>
+    `;
+
+    // Handle checkbox styling
+    panel.querySelectorAll('.checklist-item input').forEach(cb => {
+      cb.addEventListener('change', e => {
+        e.target.parentElement.classList.toggle('done', e.target.checked);
+      });
+    });
+  }
+
+  function shareTrip() {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => alert('Link copied to clipboard!'));
+    } else {
+      prompt('Copy this link:', url);
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
