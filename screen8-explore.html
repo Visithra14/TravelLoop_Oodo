@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – Explore</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#1a3c5e;--accent:#e8a87c;--light:#f7f4ef;--white:#fff;--gray:#6b7280;--border:#e5e0d8;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);}
+  nav{background:var(--primary);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav .logo{color:var(--accent);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-decoration:none;}
+  nav a{color:#ccd6e0;text-decoration:none;font-size:.9rem;margin-left:20px;}
+  nav a:hover{color:var(--accent);}
+  .hero{background:linear-gradient(135deg,var(--primary),#2d6a9f);padding:48px 40px;text-align:center;color:white;}
+  .hero h1{font-family:'Playfair Display',serif;font-size:2.4rem;margin-bottom:10px;}
+  .hero p{opacity:.8;margin-bottom:28px;}
+  .search-box{display:flex;gap:0;max-width:600px;margin:0 auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.15);}
+  .search-box input{flex:1;padding:16px 20px;border:none;font-size:1rem;font-family:'DM Sans',sans-serif;outline:none;}
+  .search-box select{padding:16px 12px;border:none;border-left:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;background:var(--light);}
+  .search-box button{background:var(--accent);color:white;border:none;padding:16px 24px;font-size:.95rem;font-weight:600;cursor:pointer;}
+  .container{max-width:1100px;margin:0 auto;padding:32px 24px 60px;}
+  .section-title{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--primary);margin-bottom:18px;}
+  .filter-row{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+  .filter-chip{padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:.86rem;cursor:pointer;transition:.2s;}
+  .filter-chip.active,.filter-chip:hover{background:var(--primary);color:white;border-color:var(--primary);}
+  .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
+  .place-card{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;cursor:pointer;}
+  .place-card:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(0,0,0,.1);}
+  .place-cover{height:140px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,#e8f5ff,#fff0e0);}
+  .place-body{padding:16px 18px;}
+  .place-name{font-family:'Playfair Display',serif;font-size:1rem;color:var(--primary);margin-bottom:4px;}
+  .place-meta{font-size:.8rem;color:var(--gray);margin-bottom:10px;}
+  .place-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+  .place-tag{background:var(--light);padding:3px 10px;border-radius:10px;font-size:.74rem;color:var(--gray);}
+  .place-footer{display:flex;align-items:center;justify-content:space-between;}
+  .rating{font-size:.82rem;color:#f59e0b;}
+  .add-btn{background:var(--accent);color:white;border:none;border-radius:8px;padding:6px 14px;font-size:.8rem;font-weight:600;cursor:pointer;}
+  .no-results{text-align:center;padding:60px 20px;color:var(--gray);}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="screen3-dashboard.html">✈ Traveloop</a>
+  <div>
+    <a href="screen3-dashboard.html">Dashboard</a>
+    <a href="screen6-my-trips.html">My Trips</a>
+    <a href="screen4-create-trip.html">+ New Trip</a>
+    <a href="screen7-profile.html">Profile</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Explore the World</h1>
+  <p>Discover cities, activities, and hidden gems for your next adventure</p>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search cities, activities..." oninput="doSearch()">
+    <select id="categoryFilter" onchange="doSearch()">
+      <option value="">All Categories</option>
+      <option value="Beach">🏖 Beach</option>
+      <option value="Mountains">🏔 Mountains</option>
+      <option value="City">🏙 City</option>
+      <option value="Culture">🏛 Culture</option>
+      <option value="Food">🍜 Food</option>
+      <option value="Nature">🌿 Nature</option>
+    </select>
+    <button onclick="doSearch()">Search</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="filter-row" id="filterRow">
+    <button class="filter-chip active" onclick="setRegion('All',this)">All</button>
+    <button class="filter-chip" onclick="setRegion('Asia',this)">Asia</button>
+    <button class="filter-chip" onclick="setRegion('Europe',this)">Europe</button>
+    <button class="filter-chip" onclick="setRegion('Americas',this)">Americas</button>
+    <button class="filter-chip" onclick="setRegion('Africa',this)">Africa</button>
+    <button class="filter-chip" onclick="setRegion('Oceania',this)">Oceania</button>
+  </div>
+
+  <div class="section-title" id="resultsTitle">Popular Destinations</div>
+  <div class="results-grid" id="resultsGrid"></div>
+</div>
+
+<script>
+  const destinations = [
+    { name:'Paris', country:'France', region:'Europe', emoji:'🗼', tags:['City','Culture','Food'], rating:4.8, desc:'City of lights, art, and romance.' },
+    { name:'Bali', country:'Indonesia', region:'Asia', emoji:'🌺', tags:['Beach','Nature','Culture'], rating:4.7, desc:'Tropical paradise with stunning temples.' },
+    { name:'Tokyo', country:'Japan', region:'Asia', emoji:'🗾', tags:['City','Food','Culture'], rating:4.9, desc:'Ultra-modern city with deep tradition.' },
+    { name:'Rome', country:'Italy', region:'Europe', emoji:'🏛', tags:['Culture','Food','City'], rating:4.7, desc:'The Eternal City, rich in history.' },
+    { name:'New York', country:'USA', region:'Americas', emoji:'🗽', tags:['City','Culture','Food'], rating:4.6, desc:'The city that never sleeps.' },
+    { name:'Santorini', country:'Greece', region:'Europe', emoji:'🌅', tags:['Beach','City','Culture'], rating:4.9, desc:'Iconic white-washed villages and blue domes.' },
+    { name:'Kyoto', country:'Japan', region:'Asia', emoji:'⛩', tags:['Culture','Nature','City'], rating:4.8, desc:'Ancient capital with serene temples.' },
+    { name:'Machu Picchu', country:'Peru', region:'Americas', emoji:'🏔', tags:['Mountains','Culture','Nature'], rating:4.9, desc:'Lost city of the Incas.' },
+    { name:'Dubai', country:'UAE', region:'Asia', emoji:'🌆', tags:['City','Beach','Culture'], rating:4.6, desc:'Ultra-luxury meets desert adventure.' },
+    { name:'Cape Town', country:'South Africa', region:'Africa', emoji:'🏞', tags:['Nature','Beach','City'], rating:4.8, desc:'Where mountains meet the ocean.' },
+    { name:'Sydney', country:'Australia', region:'Oceania', emoji:'🦘', tags:['City','Beach','Culture'], rating:4.7, desc:'Harbour city with iconic Opera House.' },
+    { name:'Goa', country:'India', region:'Asia', emoji:'🌊', tags:['Beach','Food','Nature'], rating:4.5, desc:'Sun, sand, and spectacular seafood.' },
+    { name:'Amsterdam', country:'Netherlands', region:'Europe', emoji:'🚲', tags:['City','Culture','Nature'], rating:4.7, desc:'Canals, tulips, and world-class museums.' },
+    { name:'Bangkok', country:'Thailand', region:'Asia', emoji:'🛕', tags:['City','Food','Culture'], rating:4.6, desc:'Vibrant street food and golden temples.' },
+    { name:'Barcelona', country:'Spain', region:'Europe', emoji:'🎨', tags:['City','Beach','Culture'], rating:4.8, desc:'Gaudí architecture and vibrant nightlife.' },
+    { name:'Maldives', country:'Maldives', region:'Asia', emoji:'🐠', tags:['Beach','Nature'], rating:5.0, desc:'Overwater bungalows in crystal blue lagoons.' }
+  ];
+
+  let currentRegion = 'All';
+
+  function doSearch() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const cat = document.getElementById('categoryFilter').value;
+    let results = destinations;
+    if (currentRegion !== 'All') results = results.filter(d => d.region === currentRegion);
+    if (q) results = results.filter(d => d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.tags.some(t => t.toLowerCase().includes(q)));
+    if (cat) results = results.filter(d => d.tags.includes(cat));
+    document.getElementById('resultsTitle').textContent = q || cat ? `Results (${results.length})` : `Popular in ${currentRegion}`;
+    renderResults(results);
+  }
+
+  function setRegion(region, el) {
+    currentRegion = region;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    doSearch();
+  }
+
+  function renderResults(list) {
+    const grid = document.getElementById('resultsGrid');
+    if (!list.length) {
+      grid.innerHTML = '<div class="no-results" style="grid-column:1/-1"><p>No destinations found. Try a different search.</p></div>';
+      return;
+    }
+    grid.innerHTML = list.map(d => `
+      <div class="place-card">
+        <div class="place-cover">${d.emoji}</div>
+        <div class="place-body">
+          <div class="place-name">${d.name}</div>
+          <div class="place-meta">📍 ${d.country} · ${d.region}</div>
+          <div class="place-tags">${d.tags.map(t=>`<span class="place-tag">${t}</span>`).join('')}</div>
+          <div style="font-size:.82rem;color:var(--gray);margin-bottom:10px">${d.desc}</div>
+          <div class="place-footer">
+            <span class="rating">⭐ ${d.rating}</span>
+            <button class="add-btn" onclick="addToTrip('${d.name}','${d.country}')">+ Add to Trip</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function addToTrip(city, country) {
+    const trip = JSON.parse(localStorage.getItem('traveloop_current_trip') || 'null');
+    if (!trip) { alert('No active trip. Create a trip first!'); window.location.href='screen4-create-trip.html'; return; }
+    if (!trip.cities) trip.cities = [];
+    if (trip.cities.find(c => c.city === city)) { alert(`${city} is already in your trip!`); return; }
+    trip.cities.push({ city, country, arrival: '', departure: '', budget: 0 });
+    localStorage.setItem('traveloop_current_trip', JSON.stringify(trip));
+    const trips = JSON.parse(localStorage.getItem('traveloop_trips') || '[]');
+    const idx = trips.findIndex(t => t.id === trip.id);
+    if (idx !== -1) trips[idx] = trip;
+    localStorage.setItem('traveloop_trips', JSON.stringify(trips));
+    alert(`${city} added to "${trip.name}"!`);
+  }
+
+  doSearch();
+</script>
+</body>
+</html>
