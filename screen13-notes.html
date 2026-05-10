@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – Trip Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#1a3c5e;--accent:#e8a87c;--light:#f7f4ef;--white:#fff;--gray:#6b7280;--border:#e5e0d8;--danger:#e05c5c;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);}
+  nav{background:var(--primary);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav .logo{color:var(--accent);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-decoration:none;}
+  nav a{color:#ccd6e0;text-decoration:none;font-size:.9rem;margin-left:20px;}
+  nav a:hover{color:var(--accent);}
+  .layout{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 56px);}
+  .sidebar{background:var(--white);border-right:1.5px solid var(--border);padding:20px 16px;overflow-y:auto;}
+  .sidebar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .sidebar-header h2{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--primary);}
+  .new-note-btn{background:var(--accent);color:white;border:none;border-radius:8px;padding:7px 14px;font-size:.84rem;font-weight:600;cursor:pointer;}
+  .note-item{padding:12px;border-radius:12px;cursor:pointer;margin-bottom:6px;border:1.5px solid transparent;transition:.2s;}
+  .note-item:hover{background:var(--light);}
+  .note-item.active{background:#fff8f0;border-color:var(--accent);}
+  .note-item .note-title{font-weight:600;font-size:.9rem;color:var(--primary);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .note-item .note-preview{font-size:.78rem;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .note-item .note-meta{font-size:.72rem;color:var(--gray);margin-top:4px;display:flex;justify-content:space-between;}
+  .note-item .delete-note{opacity:0;color:var(--danger);font-size:.85rem;cursor:pointer;}
+  .note-item:hover .delete-note{opacity:1;}
+  .main{display:flex;flex-direction:column;}
+  .toolbar{background:var(--white);border-bottom:1.5px solid var(--border);padding:12px 24px;display:flex;gap:8px;align-items:center;}
+  .tool-btn{background:none;border:1.5px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:.82rem;transition:.2s;}
+  .tool-btn:hover{background:var(--light);}
+  .editor-area{flex:1;padding:32px 40px;display:flex;flex-direction:column;gap:12px;}
+  .note-title-input{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--primary);border:none;background:transparent;width:100%;outline:none;}
+  .note-title-input::placeholder{color:var(--border);}
+  .note-meta-bar{display:flex;gap:16px;align-items:center;font-size:.83rem;color:var(--gray);padding-bottom:12px;border-bottom:1.5px solid var(--border);}
+  .note-meta-bar select{border:none;background:transparent;font-size:.83rem;color:var(--gray);font-family:'DM Sans',sans-serif;cursor:pointer;}
+  .note-body{flex:1;font-size:.97rem;line-height:1.8;border:none;background:transparent;resize:none;width:100%;outline:none;font-family:'DM Sans',sans-serif;min-height:300px;}
+  .note-body::placeholder{color:var(--border);}
+  .save-bar{background:var(--white);border-top:1.5px solid var(--border);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;}
+  .save-bar .info{font-size:.82rem;color:var(--gray);}
+  .btn{padding:10px 22px;border-radius:9px;font-size:.9rem;font-weight:600;cursor:pointer;border:none;}
+  .btn-accent{background:var(--accent);color:white;}
+  .empty-editor{flex:1;display:flex;align-items:center;justify-content:center;color:var(--gray);flex-direction:column;gap:10px;}
+  .empty-editor .emoji{font-size:3rem;}
+  @media(max-width:700px){.layout{grid-template-columns:1fr;}.sidebar{height:200px;overflow-x:auto;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="screen3-dashboard.html">✈ Traveloop</a>
+  <div>
+    <a href="screen3-dashboard.html">Dashboard</a>
+    <a href="screen6-my-trips.html">My Trips</a>
+    <a href="screen9-itinerary-view.html">Itinerary</a>
+    <a href="screen7-profile.html">Profile</a>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>Notes</h2>
+      <button class="new-note-btn" onclick="newNote()">+ New</button>
+    </div>
+    <div id="noteList"></div>
+  </div>
+
+  <!-- Editor -->
+  <div class="main" id="editorSection">
+    <div class="toolbar">
+      <button class="tool-btn" onclick="fmt('bold')"><b>B</b></button>
+      <button class="tool-btn" onclick="fmt('italic')"><i>I</i></button>
+      <button class="tool-btn" onclick="fmt('underline')"><u>U</u></button>
+      <span style="color:var(--border);padding:0 4px">|</span>
+      <button class="tool-btn" onclick="insertEmoji('⭐')">⭐</button>
+      <button class="tool-btn" onclick="insertEmoji('📍')">📍</button>
+      <button class="tool-btn" onclick="insertEmoji('💡')">💡</button>
+      <button class="tool-btn" onclick="insertEmoji('🍜')">🍜</button>
+      <button class="tool-btn" onclick="insertEmoji('🏛')">🏛</button>
+      <button class="tool-btn" onclick="insertEmoji('📸')">📸</button>
+    </div>
+    <div class="editor-area" id="editorArea">
+      <div class="empty-editor" id="emptyEditor">
+        <div class="emoji">📝</div>
+        <p>Select a note or create a new one</p>
+        <button class="btn btn-accent" onclick="newNote()">+ New Note</button>
+      </div>
+      <input class="note-title-input" id="noteTitle" placeholder="Note title..." style="display:none">
+      <div class="note-meta-bar" id="noteMetaBar" style="display:none">
+        <span id="noteDate">Today</span>
+        <span>·</span>
+        <select id="noteCity"><option value="">No city</option></select>
+        <span>·</span>
+        <select id="noteMood">
+          <option>😊 Excited</option>
+          <option>😌 Relaxed</option>
+          <option>🤩 Amazed</option>
+          <option>😴 Tired</option>
+          <option>🤔 Curious</option>
+          <option>😋 Hungry</option>
+        </select>
+      </div>
+      <textarea class="note-body" id="noteBody" placeholder="Write your thoughts, memories, tips..." style="display:none"></textarea>
+    </div>
+    <div class="save-bar" id="saveBar" style="display:none">
+      <span class="info" id="wordCount">0 words</span>
+      <button class="btn btn-accent" onclick="saveNote()">💾 Save Note</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let notes = [];
+  let activeIndex = -1;
+
+  function load() {
+    notes = JSON.parse(localStorage.getItem('traveloop_notes') || '[]');
+    if (!notes.length) {
+      notes = [
+        { id: 1, title: 'First impressions of Paris', body: 'The Eiffel Tower was breathtaking at night! The street food near Champs-Élysées was amazing.', city: 'Paris', mood: '🤩 Amazed', date: '2025-06-01', updatedAt: '2025-06-01' },
+        { id: 2, title: 'Tips for Colosseum visit', body: 'Book tickets in advance! Skip-the-line is worth every rupee. Go early morning to avoid crowds.', city: 'Rome', mood: '💡 Curious', date: '2025-06-04', updatedAt: '2025-06-04' }
+      ];
+    }
+    loadCityOptions();
+    renderNoteList();
+  }
+
+  function loadCityOptions() {
+    const trip = JSON.parse(localStorage.getItem('traveloop_current_trip') || 'null');
+    const sel = document.getElementById('noteCity');
+    if (trip && trip.cities) {
+      trip.cities.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.city;
+        opt.textContent = c.city;
+        sel.appendChild(opt);
+      });
+    }
+  }
+
+  function renderNoteList() {
+    const list = document.getElementById('noteList');
+    list.innerHTML = '';
+    if (!notes.length) {
+      list.innerHTML = '<p style="font-size:.85rem;color:var(--gray);text-align:center;padding:20px">No notes yet</p>';
+      return;
+    }
+    notes.forEach((note, i) => {
+      const div = document.createElement('div');
+      div.className = 'note-item' + (i === activeIndex ? ' active' : '');
+      div.innerHTML = `
+        <div class="note-title">${note.title || 'Untitled'}</div>
+        <div class="note-preview">${note.body || ''}</div>
+        <div class="note-meta"><span>${note.city || ''} ${note.mood || ''}</span><span class="delete-note" onclick="event.stopPropagation();deleteNote(${i})">🗑</span></div>
+      `;
+      div.onclick = () => openNote(i);
+      list.appendChild(div);
+    });
+  }
+
+  function openNote(i) {
+    activeIndex = i;
+    const note = notes[i];
+    document.getElementById('emptyEditor').style.display = 'none';
+    ['noteTitle','noteMetaBar','noteBody','saveBar'].forEach(id => document.getElementById(id).style.display = '');
+    document.getElementById('noteTitle').value = note.title || '';
+    document.getElementById('noteBody').value = note.body || '';
+    document.getElementById('noteDate').textContent = note.date || new Date().toISOString().split('T')[0];
+    document.getElementById('noteCity').value = note.city || '';
+    document.getElementById('noteMood').value = note.mood || '😊 Excited';
+    renderNoteList();
+    updateWordCount();
+  }
+
+  function newNote() {
+    const note = { id: Date.now(), title: '', body: '', city: '', mood: '😊 Excited', date: new Date().toISOString().split('T')[0], updatedAt: new Date().toISOString() };
+    notes.unshift(note);
+    openNote(0);
+  }
+
+  function saveNote() {
+    if (activeIndex < 0) return;
+    notes[activeIndex].title = document.getElementById('noteTitle').value || 'Untitled';
+    notes[activeIndex].body = document.getElementById('noteBody').value;
+    notes[activeIndex].city = document.getElementById('noteCity').value;
+    notes[activeIndex].mood = document.getElementById('noteMood').value;
+    notes[activeIndex].updatedAt = new Date().toISOString();
+    localStorage.setItem('traveloop_notes', JSON.stringify(notes));
+    renderNoteList();
+    alert('Note saved!');
+  }
+
+  function deleteNote(i) {
+    if (!confirm('Delete this note?')) return;
+    notes.splice(i, 1);
+    activeIndex = -1;
+    document.getElementById('emptyEditor').style.display = '';
+    ['noteTitle','noteMetaBar','noteBody','saveBar'].forEach(id => document.getElementById(id).style.display = 'none');
+    localStorage.setItem('traveloop_notes', JSON.stringify(notes));
+    renderNoteList();
+  }
+
+  function fmt(cmd) {
+    document.getElementById('noteBody').focus();
+    document.execCommand(cmd, false, null);
+  }
+
+  function insertEmoji(e) {
+    const ta = document.getElementById('noteBody');
+    const start = ta.selectionStart;
+    ta.value = ta.value.slice(0, start) + e + ta.value.slice(start);
+    ta.selectionStart = ta.selectionEnd = start + e.length;
+    ta.focus();
+    updateWordCount();
+  }
+
+  function updateWordCount() {
+    const text = document.getElementById('noteBody').value;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    document.getElementById('wordCount').textContent = words + ' words';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('noteBody').addEventListener('input', updateWordCount);
+  });
+
+  load();
+</script>
+</body>
+</html>
