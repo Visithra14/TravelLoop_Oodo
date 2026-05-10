@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – Trip Invoice</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#1a3c5e;--accent:#e8a87c;--light:#f7f4ef;--white:#fff;--gray:#6b7280;--border:#e5e0d8;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);}
+  nav{background:var(--primary);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav .logo{color:var(--accent);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-decoration:none;}
+  nav a{color:#ccd6e0;text-decoration:none;font-size:.9rem;margin-left:20px;}
+  .container{max-width:860px;margin:36px auto;padding:0 20px 60px;}
+  .action-row{display:flex;justify-content:flex-end;gap:12px;margin-bottom:24px;}
+  .btn{padding:11px 22px;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;border:none;}
+  .btn-primary{background:var(--primary);color:white;}
+  .btn-accent{background:var(--accent);color:white;}
+  .btn-outline{background:none;border:2px solid var(--primary);color:var(--primary);}
+  /* Invoice card */
+  #invoice{background:var(--white);border-radius:20px;padding:44px 48px;box-shadow:0 4px 24px rgba(0,0,0,.08);}
+  .inv-header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:28px;border-bottom:2px solid var(--border);margin-bottom:28px;}
+  .inv-logo{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--primary);}
+  .inv-logo span{color:var(--accent);}
+  .inv-meta h2{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--primary);margin-bottom:4px;}
+  .inv-meta p{font-size:.85rem;color:var(--gray);}
+  .inv-info{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px;}
+  .inv-info-block h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gray);margin-bottom:8px;}
+  .inv-info-block p{font-size:.92rem;color:#222;line-height:1.6;}
+  table{width:100%;border-collapse:collapse;margin-bottom:20px;}
+  thead th{background:var(--primary);color:white;padding:12px 16px;text-align:left;font-size:.83rem;font-weight:500;}
+  thead th:last-child{text-align:right;}
+  tbody td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:.9rem;}
+  tbody td:last-child{text-align:right;font-weight:600;color:var(--primary);}
+  tbody tr:hover{background:var(--light);}
+  .totals-block{margin-left:auto;width:300px;}
+  .total-row{display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;border-bottom:1px solid var(--border);}
+  .total-row:last-child{border-bottom:none;font-weight:700;font-size:1rem;color:var(--primary);padding-top:12px;}
+  .inv-footer{margin-top:32px;padding-top:20px;border-top:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .inv-footer p{font-size:.82rem;color:var(--gray);}
+  .status-badge{background:#e8f5e9;color:#2e7d32;padding:6px 18px;border-radius:20px;font-weight:700;font-size:.85rem;}
+  @media print{nav,.action-row{display:none!important;}body{background:white;}#invoice{box-shadow:none;border-radius:0;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="screen3-dashboard.html">✈ Traveloop</a>
+  <div>
+    <a href="screen3-dashboard.html">Dashboard</a>
+    <a href="screen6-my-trips.html">My Trips</a>
+    <a href="screen9-itinerary-view.html">Itinerary</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="action-row">
+    <button class="btn btn-outline" onclick="window.history.back()">← Back</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨 Print Invoice</button>
+    <button class="btn btn-accent" onclick="downloadPDF()">⬇ Download PDF</button>
+  </div>
+
+  <div id="invoice">
+    <div class="inv-header">
+      <div>
+        <div class="inv-logo">✈ Travel<span>oop</span></div>
+        <p style="font-size:.82rem;color:var(--gray);margin-top:4px">Your AI Travel Companion</p>
+      </div>
+      <div class="inv-meta" style="text-align:right">
+        <h2 id="invTitle">TRIP INVOICE</h2>
+        <p>Invoice #: <strong id="invId">TL-0001</strong></p>
+        <p>Date: <strong id="invDate">–</strong></p>
+        <p style="margin-top:6px"><span class="status-badge">CONFIRMED</span></p>
+      </div>
+    </div>
+
+    <div class="inv-info">
+      <div class="inv-info-block">
+        <h4>Traveller</h4>
+        <p id="travName">–</p>
+        <p id="travEmail" style="color:var(--gray);font-size:.85rem"></p>
+      </div>
+      <div class="inv-info-block">
+        <h4>Trip Details</h4>
+        <p id="tripNameInv">–</p>
+        <p style="color:var(--gray);font-size:.85rem" id="tripDates">–</p>
+        <p style="color:var(--gray);font-size:.85rem" id="tripCities">–</p>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Category</th>
+          <th>Description</th>
+          <th>City</th>
+          <th style="text-align:right">Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody id="invoiceRows"></tbody>
+    </table>
+
+    <div class="totals-block">
+      <div class="total-row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+      <div class="total-row"><span>Taxes & Fees (5%)</span><span id="taxes">₹0</span></div>
+      <div class="total-row"><span>Discount</span><span id="discount">–₹0</span></div>
+      <div class="total-row"><span>Grand Total</span><span id="grandTotal">₹0</span></div>
+    </div>
+
+    <div class="inv-footer">
+      <p>Generated by Traveloop &nbsp;|&nbsp; <span id="footerDate"></span></p>
+      <p style="color:var(--primary);font-weight:600">Thank you for travelling with us! ✈</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function init() {
+    const trip = JSON.parse(localStorage.getItem('traveloop_current_trip') || 'null');
+    const itinerary = JSON.parse(localStorage.getItem('traveloop_itinerary') || '{}');
+    const users = JSON.parse(localStorage.getItem('traveloop_users') || '[]');
+    const currentUsername = localStorage.getItem('traveloop_current_user');
+    const user = users.find(u => u.username === currentUsername) || {};
+
+    document.getElementById('invId').textContent = 'TL-' + String(Date.now()).slice(-4);
+    const today = new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+    document.getElementById('invDate').textContent = today;
+    document.getElementById('footerDate').textContent = today;
+
+    if (trip) {
+      document.getElementById('tripNameInv').textContent = trip.name;
+      document.getElementById('tripDates').textContent = `${trip.startDate || '–'} → ${trip.endDate || '–'}`;
+      document.getElementById('tripCities').textContent = (trip.cities||[]).map(c=>c.city).join(', ');
+    }
+
+    document.getElementById('travName').textContent = [user.firstName, user.lastName].filter(Boolean).join(' ') || currentUsername || 'Traveller';
+    document.getElementById('travEmail').textContent = user.email || '';
+
+    // Build rows from itinerary
+    const rows = [];
+    let rowNum = 1;
+    let subtotal = 0;
+
+    if (Object.keys(itinerary).length) {
+      Object.entries(itinerary).forEach(([city, days]) => {
+        days.forEach(day => {
+          (day.activities || []).forEach(act => {
+            rows.push({ num: rowNum++, category: act.type, desc: act.name, city, amount: Number(act.cost||0) });
+            subtotal += Number(act.cost||0);
+          });
+        });
+      });
+    } else {
+      // Demo rows
+      const demo = [
+        { num:1, category:'🏨 Hotel', desc:'Hotel Lumière, Paris (3 nights)', city:'Paris', amount:12000 },
+        { num:2, category:'🚗 Transport', desc:'Flight: BLR → CDG (return)', city:'Paris', amount:45000 },
+        { num:3, category:'🏛 Sightseeing', desc:'Eiffel Tower entry', city:'Paris', amount:500 },
+        { num:4, category:'🍽 Meal', desc:'Dinner at Le Jules Verne', city:'Paris', amount:3500 },
+        { num:5, category:'🏨 Hotel', desc:'Hotel Gladiatori, Rome (3 nights)', city:'Rome', amount:10500 },
+        { num:6, category:'🏛 Sightseeing', desc:'Colosseum + Roman Forum pass', city:'Rome', amount:700 },
+        { num:7, category:'🛍 Shopping', desc:'Souvenirs & shopping', city:'Rome', amount:4000 }
+      ];
+      demo.forEach(r => { rows.push(r); subtotal += r.amount; });
+    }
+
+    const tbody = document.getElementById('invoiceRows');
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.num}</td>
+        <td>${r.category}</td>
+        <td>${r.desc}</td>
+        <td>${r.city}</td>
+        <td>₹${r.amount.toLocaleString()}</td>
+      </tr>
+    `).join('');
+
+    const tax = Math.round(subtotal * 0.05);
+    const discount = 0;
+    const grand = subtotal + tax - discount;
+
+    document.getElementById('subtotal').textContent = '₹' + subtotal.toLocaleString();
+    document.getElementById('taxes').textContent = '₹' + tax.toLocaleString();
+    document.getElementById('discount').textContent = '–₹' + discount.toLocaleString();
+    document.getElementById('grandTotal').textContent = '₹' + grand.toLocaleString();
+  }
+
+  function downloadPDF() {
+    window.print();
+    // Note: User can Save as PDF from the print dialog
+    alert('In the print dialog, select "Save as PDF" as the destination to download!');
+  }
+
+  init();
+</script>
+</body>
+</html>
