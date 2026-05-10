@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – Packing Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#1a3c5e;--accent:#e8a87c;--light:#f7f4ef;--white:#fff;--gray:#6b7280;--border:#e5e0d8;--green:#4caf80;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);}
+  nav{background:var(--primary);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav .logo{color:var(--accent);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-decoration:none;}
+  nav a{color:#ccd6e0;text-decoration:none;font-size:.9rem;margin-left:20px;}
+  nav a:hover{color:var(--accent);}
+  .container{max-width:860px;margin:36px auto;padding:0 20px 80px;}
+  h1{font-family:'Playfair Display',serif;font-size:2rem;color:var(--primary);margin-bottom:6px;}
+  .subtitle{color:var(--gray);margin-bottom:28px;}
+  .progress-card{background:var(--primary);border-radius:16px;padding:24px 28px;color:var(--white);margin-bottom:24px;display:flex;align-items:center;gap:24px;}
+  .big-pct{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;}
+  .progress-right{flex:1;}
+  .progress-right p{opacity:.75;font-size:.88rem;margin-bottom:10px;}
+  .prog-bar{height:10px;background:rgba(255,255,255,.25);border-radius:5px;overflow:hidden;}
+  .prog-fill{height:100%;background:var(--accent);border-radius:5px;transition:width .4s;}
+  .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .cat-card{background:var(--white);border-radius:16px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+  .cat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .cat-title{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.95rem;color:var(--primary);}
+  .cat-title span.icon{font-size:1.2rem;}
+  .cat-progress{font-size:.82rem;color:var(--gray);}
+  .cat-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:14px;}
+  .cat-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width .4s;}
+  .check-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem;cursor:pointer;}
+  .check-item:last-child{border-bottom:none;}
+  .check-item input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px;cursor:pointer;}
+  .check-item.done{color:var(--gray);}
+  .check-item.done span{text-decoration:line-through;}
+  .add-row{display:flex;gap:8px;margin-top:12px;}
+  .add-row input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.86rem;font-family:'DM Sans',sans-serif;}
+  .add-row input:focus{outline:none;border-color:var(--accent);}
+  .add-row button{background:var(--accent);color:white;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:.86rem;}
+  .btn-row{display:flex;gap:12px;margin-top:24px;}
+  .btn{padding:11px 24px;border-radius:10px;font-size:.92rem;font-weight:600;cursor:pointer;border:none;}
+  .btn-primary{background:var(--primary);color:white;}
+  .btn-outline{background:none;border:2px solid var(--primary);color:var(--primary);}
+  @media(max-width:600px){.cat-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="screen3-dashboard.html">✈ Traveloop</a>
+  <div>
+    <a href="screen3-dashboard.html">Dashboard</a>
+    <a href="screen6-my-trips.html">My Trips</a>
+    <a href="screen9-itinerary-view.html">Itinerary</a>
+    <a href="screen7-profile.html">Profile</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>🧳 Packing Checklist</h1>
+  <p class="subtitle">Track everything you need for your trip.</p>
+
+  <div class="progress-card">
+    <div class="big-pct" id="totalPct">0%</div>
+    <div class="progress-right">
+      <p id="totalProgress">0 of 0 items packed</p>
+      <div class="prog-bar"><div class="prog-fill" id="totalBar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="cat-grid" id="catGrid"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="saveChecklist()">💾 Save Checklist</button>
+    <button class="btn btn-outline" onclick="resetAll()">🔄 Reset All</button>
+  </div>
+</div>
+
+<script>
+  const defaultCategories = [
+    { name: 'Documents', icon: '📄', items: ['Passport / Visa', 'Flight Tickets', 'Hotel Booking', 'Travel Insurance', 'Emergency Contacts', 'Driving License'] },
+    { name: 'Clothing', icon: '👕', items: ['T-shirts', 'Trousers / Jeans', 'Formal wear', 'Sleepwear', 'Underwear & socks', 'Jacket / Sweater', 'Rain coat'] },
+    { name: 'Toiletries', icon: '🧴', items: ['Toothbrush & paste', 'Shampoo', 'Soap / Body wash', 'Deodorant', 'Sunscreen', 'Razor', 'Moisturizer'] },
+    { name: 'Electronics', icon: '🔌', items: ['Phone + Charger', 'Power bank', 'Laptop', 'Universal adaptor', 'Earphones / Headphones', 'Camera'] },
+    { name: 'Health', icon: '💊', items: ['Prescription meds', 'Pain killers', 'Band-aids', 'Anti-nausea tablets', 'Hand sanitiser', 'Face masks'] },
+    { name: 'Extras', icon: '🎒', items: ['Snacks', 'Reusable water bottle', 'Neck pillow', 'Eye mask', 'Guidebook / Maps', 'Currency / Cash'] }
+  ];
+
+  let checklist = {};
+
+  function load() {
+    const saved = localStorage.getItem('traveloop_packing');
+    checklist = saved ? JSON.parse(saved) : {};
+    if (!Object.keys(checklist).length) {
+      defaultCategories.forEach(cat => {
+        checklist[cat.name] = cat.items.map(item => ({ name: item, done: false }));
+      });
+    }
+    renderAll();
+  }
+
+  function renderAll() {
+    const grid = document.getElementById('catGrid');
+    grid.innerHTML = '';
+    defaultCategories.forEach(cat => {
+      const items = checklist[cat.name] || [];
+      const done = items.filter(i => i.done).length;
+      const pct = items.length ? Math.round((done/items.length)*100) : 0;
+      const card = document.createElement('div');
+      card.className = 'cat-card';
+      card.innerHTML = `
+        <div class="cat-header">
+          <div class="cat-title"><span class="icon">${cat.icon}</span>${cat.name}</div>
+          <span class="cat-progress">${done}/${items.length}</span>
+        </div>
+        <div class="cat-bar"><div class="cat-bar-fill" style="width:${pct}%"></div></div>
+        <div id="items-${cat.name.replace(/\s/g,'_')}">
+          ${items.map((item, i) => `
+            <label class="check-item${item.done?' done':''}">
+              <input type="checkbox" ${item.done?'checked':''} onchange="toggle('${cat.name}',${i},this)">
+              <span>${item.name}</span>
+            </label>
+          `).join('')}
+        </div>
+        <div class="add-row">
+          <input type="text" placeholder="Add item..." id="new-${cat.name.replace(/\s/g,'_')}">
+          <button onclick="addItem('${cat.name}')">+</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    updateTotals();
+  }
+
+  function toggle(catName, index, cb) {
+    checklist[catName][index].done = cb.checked;
+    renderAll();
+  }
+
+  function addItem(catName) {
+    const inputId = 'new-' + catName.replace(/\s/g,'_');
+    const input = document.getElementById(inputId);
+    const val = input.value.trim();
+    if (!val) return;
+    if (!checklist[catName]) checklist[catName] = [];
+    checklist[catName].push({ name: val, done: false });
+    renderAll();
+  }
+
+  function updateTotals() {
+    let total = 0, done = 0;
+    Object.values(checklist).forEach(items => {
+      total += items.length;
+      done += items.filter(i => i.done).length;
+    });
+    const pct = total ? Math.round((done/total)*100) : 0;
+    document.getElementById('totalPct').textContent = pct + '%';
+    document.getElementById('totalProgress').textContent = `${done} of ${total} items packed`;
+    document.getElementById('totalBar').style.width = pct + '%';
+  }
+
+  function saveChecklist() {
+    localStorage.setItem('traveloop_packing', JSON.stringify(checklist));
+    alert('Checklist saved!');
+  }
+
+  function resetAll() {
+    if (!confirm('Reset all items?')) return;
+    Object.keys(checklist).forEach(cat => checklist[cat].forEach(i => i.done = false));
+    renderAll();
+  }
+
+  load();
+</script>
+</body>
+</html>
