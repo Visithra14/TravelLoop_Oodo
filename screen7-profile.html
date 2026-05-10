@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#1a3c5e;--accent:#e8a87c;--light:#f7f4ef;--white:#fff;--gray:#6b7280;--border:#e5e0d8;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);}
+  nav{background:var(--primary);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav .logo{color:var(--accent);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-decoration:none;}
+  nav a{color:#ccd6e0;text-decoration:none;font-size:.9rem;margin-left:20px;}
+  nav a:hover{color:var(--accent);}
+  .container{max-width:860px;margin:40px auto;padding:0 20px 60px;}
+  .profile-hero{background:var(--primary);border-radius:20px;padding:36px;display:flex;align-items:center;gap:28px;margin-bottom:28px;color:var(--white);}
+  .avatar-wrap{position:relative;}
+  .avatar{width:90px;height:90px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:2.2rem;overflow:hidden;border:3px solid rgba(255,255,255,.3);}
+  .avatar img{width:100%;height:100%;object-fit:cover;}
+  .avatar-edit{position:absolute;bottom:0;right:0;background:var(--accent);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;}
+  .profile-info h2{font-family:'Playfair Display',serif;font-size:1.6rem;margin-bottom:4px;}
+  .profile-info p{opacity:.75;font-size:.9rem;}
+  .stats-row{display:flex;gap:24px;margin-top:14px;}
+  .stat{text-align:center;}
+  .stat strong{display:block;font-size:1.3rem;font-family:'Playfair Display',serif;}
+  .stat span{font-size:.78rem;opacity:.7;}
+  .tabs{display:flex;gap:4px;background:var(--white);border-radius:12px;padding:4px;margin-bottom:24px;}
+  .tab{flex:1;text-align:center;padding:10px;border-radius:9px;cursor:pointer;font-size:.9rem;font-weight:500;transition:.2s;}
+  .tab.active{background:var(--primary);color:var(--white);}
+  .tab-content{display:none;}
+  .tab-content.active{display:block;}
+  .card{background:var(--white);border-radius:16px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:20px;}
+  .card h3{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--primary);margin-bottom:18px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .form-row.full{grid-template-columns:1fr;}
+  .form-group{display:flex;flex-direction:column;gap:5px;}
+  label{font-size:.83rem;font-weight:500;color:var(--primary);}
+  input,select,textarea{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  .btn{padding:11px 24px;border-radius:10px;font-size:.92rem;font-weight:600;cursor:pointer;border:none;}
+  .btn-accent{background:var(--accent);color:var(--white);}
+  .btn-danger{background:#fee2e2;color:#b91c1c;}
+  .pref-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+  .pref-row:last-child{border-bottom:none;}
+  .pref-label h4{font-size:.93rem;font-weight:600;color:#222;}
+  .pref-label p{font-size:.8rem;color:var(--gray);}
+  .toggle{position:relative;width:44px;height:24px;}
+  .toggle input{opacity:0;width:0;height:0;}
+  .toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:24px;transition:.2s;}
+  .toggle-slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.2s;}
+  .toggle input:checked + .toggle-slider{background:var(--accent);}
+  .toggle input:checked + .toggle-slider:before{transform:translateX(20px);}
+  .badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .badge{background:var(--light);border-radius:14px;padding:16px;text-align:center;}
+  .badge .icon{font-size:1.8rem;margin-bottom:6px;}
+  .badge .name{font-size:.78rem;color:var(--gray);}
+  .badge.earned{background:linear-gradient(135deg,#fff8f0,#fde9d0);border:1.5px solid var(--accent);}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="screen3-dashboard.html">✈ Traveloop</a>
+  <div>
+    <a href="screen3-dashboard.html">Dashboard</a>
+    <a href="screen6-my-trips.html">My Trips</a>
+    <a href="screen4-create-trip.html">+ New Trip</a>
+    <a href="screen7-profile.html">Profile</a>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- Hero -->
+  <div class="profile-hero">
+    <div class="avatar-wrap">
+      <div class="avatar" id="avatarDisplay">👤</div>
+      <label class="avatar-edit" for="avatarInput">✏</label>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="changeAvatar(this)">
+    </div>
+    <div class="profile-info">
+      <h2 id="heroName">Traveller</h2>
+      <p id="heroEmail">user@email.com</p>
+      <div class="stats-row">
+        <div class="stat"><strong id="heroTrips">0</strong><span>Trips</span></div>
+        <div class="stat"><strong id="heroCities">0</strong><span>Cities</span></div>
+        <div class="stat"><strong id="heroCountries">0</strong><span>Countries</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('personal',this)">Personal Info</div>
+    <div class="tab" onclick="switchTab('preferences',this)">Preferences</div>
+    <div class="tab" onclick="switchTab('badges',this)">Badges</div>
+    <div class="tab" onclick="switchTab('security',this)">Security</div>
+  </div>
+
+  <!-- Personal Info -->
+  <div class="tab-content active" id="tab-personal">
+    <div class="card">
+      <h3>Personal Information</h3>
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input id="firstName" type="text"></div>
+        <div class="form-group"><label>Last Name</label><input id="lastName" type="text"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email</label><input id="email" type="email"></div>
+        <div class="form-group"><label>Phone</label><input id="phone" type="tel"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>City</label><input id="city" type="text"></div>
+        <div class="form-group"><label>Country</label><input id="country" type="text"></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Bio</label><input id="bio" type="text" placeholder="Tell us about yourself"></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label>Travel Style</label>
+          <select id="travelStyle">
+            <option>Budget Backpacker</option>
+            <option>Mid-range Explorer</option>
+            <option>Luxury Traveller</option>
+            <option>Adventure Seeker</option>
+            <option>Cultural Enthusiast</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-accent" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Preferences -->
+  <div class="tab-content" id="tab-preferences">
+    <div class="card">
+      <h3>Notification Preferences</h3>
+      <div class="pref-row">
+        <div class="pref-label"><h4>Trip Reminders</h4><p>Get reminders before your trip starts</p></div>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="pref-row">
+        <div class="pref-label"><h4>Budget Alerts</h4><p>Alert when spending exceeds budget</p></div>
+        <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="pref-row">
+        <div class="pref-label"><h4>Community Updates</h4><p>New itineraries from people you follow</p></div>
+        <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="pref-row">
+        <div class="pref-label"><h4>Email Newsletter</h4><p>Travel tips and destination guides</p></div>
+        <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Display Preferences</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Currency</label><select><option>INR (₹)</option><option>USD ($)</option><option>EUR (€)</option></select></div>
+        <div class="form-group"><label>Date Format</label><select><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option></select></div>
+      </div>
+      <button class="btn btn-accent" onclick="alert('Preferences saved!')">Save Preferences</button>
+    </div>
+  </div>
+
+  <!-- Badges -->
+  <div class="tab-content" id="tab-badges">
+    <div class="card">
+      <h3>Travel Badges</h3>
+      <div class="badge-grid">
+        <div class="badge earned"><div class="icon">🌍</div><div class="name">First Trip</div></div>
+        <div class="badge earned"><div class="icon">🏙</div><div class="name">City Hopper</div></div>
+        <div class="badge"><div class="icon">✈️</div><div class="name">Jet Setter</div></div>
+        <div class="badge"><div class="icon">🎒</div><div class="name">Backpacker</div></div>
+        <div class="badge"><div class="icon">🗺</div><div class="name">Explorer</div></div>
+        <div class="badge"><div class="icon">⭐</div><div class="name">5-Star Planner</div></div>
+        <div class="badge"><div class="icon">🤝</div><div class="name">Collaborator</div></div>
+        <div class="badge"><div class="icon">🏆</div><div class="name">Travel Pro</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security -->
+  <div class="tab-content" id="tab-security">
+    <div class="card">
+      <h3>Change Password</h3>
+      <div class="form-row full"><div class="form-group"><label>Current Password</label><input type="password" placeholder="Enter current password"></div></div>
+      <div class="form-row">
+        <div class="form-group"><label>New Password</label><input type="password" placeholder="New password"></div>
+        <div class="form-group"><label>Confirm Password</label><input type="password" placeholder="Confirm new password"></div>
+      </div>
+      <button class="btn btn-accent" onclick="alert('Password updated!')">Update Password</button>
+    </div>
+    <div class="card">
+      <h3>Danger Zone</h3>
+      <div class="pref-row">
+        <div class="pref-label"><h4>Log Out</h4><p>Sign out from this device</p></div>
+        <button class="btn btn-danger" onclick="logout()">Log Out</button>
+      </div>
+      <div class="pref-row">
+        <div class="pref-label"><h4>Delete Account</h4><p>Permanently delete your account and data</p></div>
+        <button class="btn btn-danger" onclick="if(confirm('Are you sure?'))alert('Account deleted')">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  function loadProfile() {
+    const users = JSON.parse(localStorage.getItem('traveloop_users') || '[]');
+    const currentUsername = localStorage.getItem('traveloop_current_user');
+    const user = users.find(u => u.username === currentUsername) || users[0];
+    if (!user) return;
+    document.getElementById('heroName').textContent = (user.firstName + ' ' + user.lastName).trim() || user.username;
+    document.getElementById('heroEmail').textContent = user.email || '';
+    document.getElementById('firstName').value = user.firstName || '';
+    document.getElementById('lastName').value = user.lastName || '';
+    document.getElementById('email').value = user.email || '';
+    document.getElementById('phone').value = user.phone || '';
+    document.getElementById('city').value = user.city || '';
+    document.getElementById('country').value = user.country || '';
+    const trips = JSON.parse(localStorage.getItem('traveloop_trips') || '[]');
+    document.getElementById('heroTrips').textContent = trips.length;
+    const cities = trips.reduce((a, t) => a + (t.cities?.length || 0), 0);
+    document.getElementById('heroCities').textContent = cities;
+    const countries = [...new Set(trips.flatMap(t => (t.cities||[]).map(c => c.country)).filter(Boolean))];
+    document.getElementById('heroCountries').textContent = countries.length;
+  }
+
+  function saveProfile() {
+    const users = JSON.parse(localStorage.getItem('traveloop_users') || '[]');
+    const currentUsername = localStorage.getItem('traveloop_current_user');
+    const idx = users.findIndex(u => u.username === currentUsername);
+    const updatedUser = { ...(users[idx] || {}), firstName: document.getElementById('firstName').value, lastName: document.getElementById('lastName').value, email: document.getElementById('email').value, phone: document.getElementById('phone').value, city: document.getElementById('city').value, country: document.getElementById('country').value };
+    if (idx !== -1) users[idx] = updatedUser; else users.push(updatedUser);
+    localStorage.setItem('traveloop_users', JSON.stringify(users));
+    alert('Profile saved!');
+    loadProfile();
+  }
+
+  function changeAvatar(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const av = document.getElementById('avatarDisplay');
+      av.innerHTML = `<img src="${e.target.result}">`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function logout() {
+    localStorage.removeItem('traveloop_current_user');
+    window.location.href = 'screen1-login.html';
+  }
+
+  loadProfile();
+</script>
+</body>
+</html>
