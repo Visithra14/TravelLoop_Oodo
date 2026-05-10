@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Traveloop – Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1a3c5e;
+      --accent: #e8a87c;
+      --accent2: #f4c89a;
+      --bg: #f7f3ee;
+      --white: #ffffff;
+      --text: #1a1a2e;
+      --muted: #7a7a8a;
+      --border: #ddd8d0;
+      --error: #c0392b;
+      --success: #27ae60;
+      --card-shadow: 0 8px 40px rgba(26,60,94,0.10);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -120px; right: -120px;
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, #e8a87c44 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -100px; left: -100px;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, #1a3c5e22 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      display: flex;
+      width: 100%;
+      max-width: 960px;
+      min-height: 580px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* LEFT PANEL */
+    .hero-panel {
+      flex: 1;
+      background: linear-gradient(155deg, #1a3c5e 0%, #0d2540 100%);
+      padding: 52px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-panel::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 280px; height: 280px;
+      border: 1px solid rgba(232,168,124,0.2);
+      border-radius: 50%;
+    }
+    .hero-panel::after {
+      content: '';
+      position: absolute;
+      bottom: 30px; left: 30px;
+      width: 180px; height: 180px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 50%;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .logo span { color: var(--accent); }
+
+    .hero-text { z-index: 1; }
+    .hero-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 500;
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+    .hero-text p {
+      font-size: 14px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.7;
+    }
+
+    .hero-stats { display: flex; gap: 28px; z-index: 1; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* RIGHT PANEL */
+    .form-panel {
+      flex: 1.1;
+      background: var(--white);
+      padding: 48px 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+    }
+
+    .tab-bar {
+      display: flex;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 32px;
+      gap: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .tab-btn.active {
+      background: var(--white);
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .form-heading { margin-bottom: 24px; }
+    .form-heading h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .form-heading p { font-size: 13px; color: var(--muted); }
+
+    .form { display: flex; flex-direction: column; gap: 14px; }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .field input {
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26,60,94,0.08);
+      background: var(--white);
+    }
+    .field input.error { border-color: var(--error); }
+    .field .err-msg { font-size: 11px; color: var(--error); display: none; }
+    .field input.error + .err-msg { display: block; }
+
+    .forgot { text-align: right; font-size: 12px; margin-top: -6px; }
+    .forgot a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .forgot a:hover { text-decoration: underline; }
+
+    .btn-primary {
+      padding: 13px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      margin-top: 4px;
+    }
+    .btn-primary:hover {
+      background: #0d2540;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(26,60,94,0.25);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .form-section { display: none; }
+    .form-section.active { display: flex; flex-direction: column; gap: 14px; }
+
+    .photo-upload {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border: 1.5px dashed var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--bg);
+      transition: border-color 0.2s;
+    }
+    .photo-upload:hover { border-color: var(--accent); }
+    .photo-upload-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--accent2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .photo-upload-text { font-size: 13px; color: var(--muted); }
+    .photo-upload-text strong { display: block; color: var(--text); font-size: 13px; }
+    #photoInput { display: none; }
+
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: var(--white);
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 999;
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--success); }
+    .toast.error-toast { background: var(--error); }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- LEFT: Hero Panel -->
+  <div class="hero-panel">
+    <div class="logo">Travel<span>oop</span></div>
+    <div class="hero-text">
+      <h2>Plan trips.<br/>Collect memories.</h2>
+      <p>Your smart travel companion for building beautiful multi-city itineraries, tracking budgets, and sharing adventures.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">14+</div>
+        <div class="stat-label">Features</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Destinations</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">1</div>
+        <div class="stat-label">App</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Form Panel -->
+  <div class="form-panel">
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginSection" class="form-section active">
+      <div class="form-heading">
+        <h3>Welcome back</h3>
+        <p>Sign in to continue planning your trips</p>
+      </div>
+      <div class="form">
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="loginUsername" placeholder="Enter your username" />
+          <span class="err-msg">Username is required</span>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" />
+          <span class="err-msg">Password is required</span>
+        </div>
+        <div class="forgot"><a href="#">Forgot password?</a></div>
+        <button class="btn-primary" onclick="handleLogin()">Sign In</button>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerSection" class="form-section">
+      <div class="form-heading">
+        <h3>Create account</h3>
+        <p>Start planning your dream trips today</p>
+      </div>
+      <div class="form">
+        <div class="row-2">
+          <div class="field">
+            <label>First Name</label>
+            <input type="text" id="regFirst" placeholder="First name" />
+            <span class="err-msg">Required</span>
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <input type="text" id="regLast" placeholder="Last name" />
+            <span class="err-msg">Required</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="regUsername" placeholder="Choose a username" />
+          <span class="err-msg">Username is required</span>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="regEmail" placeholder="you@email.com" />
+            <span class="err-msg">Valid email required</span>
+          </div>
+          <div class="field">
+            <label>Phone Number</label>
+            <input type="tel" id="regPhone" placeholder="+91 XXXXX XXXXX" />
+            <span class="err-msg">Required</span>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>City</label>
+            <input type="text" id="regCity" placeholder="Your city" />
+            <span class="err-msg">Required</span>
+          </div>
+          <div class="field">
+            <label>Country</label>
+            <input type="text" id="regCountry" placeholder="Your country" />
+            <span class="err-msg">Required</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="regPassword" placeholder="Create a strong password (min 6 chars)" />
+          <span class="err-msg">Min 6 characters required</span>
+        </div>
+
+        <!-- Photo Upload -->
+        <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+          <div class="photo-upload-icon" id="photoIcon">📷</div>
+          <div class="photo-upload-text">
+            <strong id="photoLabel">Upload Profile Photo</strong>
+            Optional – JPG, PNG up to 5MB
+          </div>
+          <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto(this)" />
+        </div>
+
+        <button class="btn-primary" onclick="handleRegister()">Create Account</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // Tab switch
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+    });
+    document.getElementById('loginSection').classList.toggle('active', tab === 'login');
+    document.getElementById('registerSection').classList.toggle('active', tab === 'register');
+  }
+
+  // Toast notification
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type;
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Validate single field
+  function validate(id, condition) {
+    const el = document.getElementById(id);
+    el.classList.toggle('error', !condition);
+    return condition;
+  }
+
+  // Login handler
+  function handleLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    let ok = true;
+    ok = validate('loginUsername', username.length > 0) && ok;
+    ok = validate('loginPassword', password.length > 0) && ok;
+    if (!ok) return showToast('Please fill in all fields', 'error-toast');
+
+    // Check localStorage for registered users
+    const users = JSON.parse(localStorage.getItem('traveloop_users') || '[]');
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (user) {
+      localStorage.setItem('traveloop_current_user', JSON.stringify(user));
+      showToast('Welcome back, ' + user.firstName + '! 🌍', 'success');
+      setTimeout(() => { window.location.href = 'screen3-dashboard.html'; }, 1400);
+    } else {
+      showToast('Invalid credentials. Try again.', 'error-toast');
+    }
+  }
+
+  // Register handler
+  function handleRegister() {
+    const first    = document.getElementById('regFirst').value.trim();
+    const last     = document.getElementById('regLast').value.trim();
+    const username = document.getElementById('regUsername').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const phone    = document.getElementById('regPhone').value.trim();
+    const city     = document.getElementById('regCity').value.trim();
+    const country  = document.getElementById('regCountry').value.trim();
+    const password = document.getElementById('regPassword').value.trim();
+
+    let ok = true;
+    ok = validate('regFirst',    first.length > 0) && ok;
+    ok = validate('regLast',     last.length > 0) && ok;
+    ok = validate('regUsername', username.length > 0) && ok;
+    ok = validate('regEmail',    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) && ok;
+    ok = validate('regPhone',    phone.length > 0) && ok;
+    ok = validate('regCity',     city.length > 0) && ok;
+    ok = validate('regCountry',  country.length > 0) && ok;
+    ok = validate('regPassword', password.length >= 6) && ok;
+    if (!ok) return showToast('Please fix the highlighted fields', 'error-toast');
+
+    // Save user to localStorage
+    const users = JSON.parse(localStorage.getItem('traveloop_users') || '[]');
+    if (users.find(u => u.username === username)) {
+      return showToast('Username already taken!', 'error-toast');
+    }
+    const newUser = { firstName: first, lastName: last, username, email, phone, city, country, password };
+    users.push(newUser);
+    localStorage.setItem('traveloop_users', JSON.stringify(users));
+    localStorage.setItem('traveloop_current_user', JSON.stringify(newUser));
+    showToast('Account created! Welcome, ' + first + ' 🎉', 'success');
+    setTimeout(() => { window.location.href = 'screen3-dashboard.html'; }, 1500);
+  }
+
+  // Photo upload preview
+  function handlePhoto(input) {
+    if (input.files && input.files[0]) {
+      document.getElementById('photoIcon').textContent = '✅';
+      document.getElementById('photoLabel').textContent = input.files[0].name;
+    }
+  }
+</script>
+</body>
+</html>
