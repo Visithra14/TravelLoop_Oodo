@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – My Trips</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#1a3c5e;--accent:#e8a87c;--light:#f7f4ef;--white:#fff;--gray:#6b7280;--border:#e5e0d8;--danger:#e05c5c;--green:#4caf80;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);color:#222;}
+  nav{background:var(--primary);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav .logo{color:var(--accent);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-decoration:none;}
+  nav a{color:#ccd6e0;text-decoration:none;font-size:.9rem;margin-left:20px;}
+  nav a:hover{color:var(--accent);}
+  .container{max-width:1100px;margin:0 auto;padding:36px 24px 60px;}
+  .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+  .page-header h1{font-family:'Playfair Display',serif;font-size:2rem;color:var(--primary);}
+  .btn{padding:11px 22px;border-radius:10px;font-size:.92rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-block;}
+  .btn-accent{background:var(--accent);color:var(--white);}
+  .btn-primary{background:var(--primary);color:var(--white);}
+  .btn-outline{background:none;border:2px solid var(--primary);color:var(--primary);}
+  .filters{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+  .filter-btn{padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:.87rem;cursor:pointer;transition:.2s;}
+  .filter-btn.active,.filter-btn:hover{background:var(--primary);color:var(--white);border-color:var(--primary);}
+  .search-bar{display:flex;gap:10px;margin-bottom:24px;}
+  .search-bar input{flex:1;padding:10px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.93rem;}
+  .search-bar input:focus{outline:none;border-color:var(--accent);}
+  .trips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+  .trip-card{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,.06);transition:.2s;cursor:pointer;}
+  .trip-card:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(0,0,0,.1);}
+  .trip-cover{height:160px;background:linear-gradient(135deg,var(--primary),#2d6a9f);display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;}
+  .trip-cover img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;}
+  .status-badge{position:absolute;top:12px;right:12px;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600;z-index:1;}
+  .status-active{background:#e8f5e9;color:#2e7d32;}
+  .status-draft{background:#fff3e0;color:#e65100;}
+  .status-completed{background:#e3f2fd;color:#1565c0;}
+  .trip-body{padding:18px 20px;}
+  .trip-name{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--primary);margin-bottom:6px;}
+  .trip-meta{font-size:.82rem;color:var(--gray);margin-bottom:10px;}
+  .trip-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .trip-tag{background:var(--light);padding:3px 10px;border-radius:12px;font-size:.75rem;color:var(--gray);}
+  .trip-footer{display:flex;align-items:center;justify-content:space-between;}
+  .trip-cities{font-size:.82rem;color:var(--primary);font-weight:500;}
+  .trip-actions{display:flex;gap:8px;}
+  .icon-btn{background:none;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:.85rem;transition:.2s;}
+  .icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .icon-btn.danger:hover{border-color:var(--danger);color:var(--danger);}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--gray);}
+  .empty-state .emoji{font-size:3rem;margin-bottom:16px;}
+  .empty-state h2{font-family:'Playfair Display',serif;color:var(--primary);margin-bottom:10px;}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+  .stat-card{background:var(--white);border-radius:14px;padding:18px 20px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+  .stat-num{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--primary);}
+  .stat-label{font-size:.8rem;color:var(--gray);margin-top:2px;}
+  @media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr;}.trips-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="screen3-dashboard.html">✈ Traveloop</a>
+  <div>
+    <a href="screen3-dashboard.html">Dashboard</a>
+    <a href="screen6-my-trips.html">My Trips</a>
+    <a href="screen4-create-trip.html">+ New Trip</a>
+    <a href="screen7-profile.html">Profile</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-header">
+    <h1>My Trips</h1>
+    <a class="btn btn-accent" href="screen4-create-trip.html">+ Create Trip</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row" id="statsRow"></div>
+
+  <!-- Search + Filters -->
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search trips by name or destination..." oninput="filterTrips()">
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
+    <button class="filter-btn" onclick="setFilter('draft',this)">Drafts</button>
+    <button class="filter-btn" onclick="setFilter('completed',this)">Completed</button>
+  </div>
+
+  <!-- Trips Grid -->
+  <div class="trips-grid" id="tripsGrid"></div>
+</div>
+
+<script>
+  let allTrips = [];
+  let currentFilter = 'all';
+
+  const covers = ['🗼','🏝','🗻','🏰','🌃','🏜','🌊','🎭'];
+
+  function loadTrips() {
+    allTrips = JSON.parse(localStorage.getItem('traveloop_trips') || '[]');
+    // Add demo trips if empty
+    if (allTrips.length === 0) {
+      allTrips = [
+        { id: 1, name: 'Europe Summer 2025', type: 'Friends Group', startDate: '2025-06-01', endDate: '2025-06-15', cities: [{city:'Paris'},{city:'Rome'},{city:'Barcelona'}], tags:['🏛 Culture','🍜 Food Tour'], totalBudget: 80000, status: 'active' },
+        { id: 2, name: 'Kerala Backwaters', type: 'Couple', startDate: '2025-03-10', endDate: '2025-03-15', cities: [{city:'Alleppey'},{city:'Munnar'}], tags:['🌿 Nature','💆 Wellness'], totalBudget: 25000, status: 'completed' },
+        { id: 3, name: 'Thailand Adventure', type: 'Solo Adventure', startDate: '2025-09-01', endDate: '2025-09-10', cities: [{city:'Bangkok'},{city:'Phuket'}], tags:['🏖 Beach','🎉 Nightlife'], totalBudget: 45000, status: 'draft' }
+      ];
+    }
+    renderStats();
+    renderTrips(allTrips);
+  }
+
+  function renderStats() {
+    const total = allTrips.length;
+    const active = allTrips.filter(t => t.status === 'active').length;
+    const completed = allTrips.filter(t => t.status === 'completed').length;
+    const cities = allTrips.reduce((acc, t) => acc + (t.cities?.length || 0), 0);
+    document.getElementById('statsRow').innerHTML = `
+      <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total Trips</div></div>
+      <div class="stat-card"><div class="stat-num">${active}</div><div class="stat-label">Active Trips</div></div>
+      <div class="stat-card"><div class="stat-num">${completed}</div><div class="stat-label">Completed</div></div>
+      <div class="stat-card"><div class="stat-num">${cities}</div><div class="stat-label">Cities Planned</div></div>
+    `;
+  }
+
+  function renderTrips(trips) {
+    const grid = document.getElementById('tripsGrid');
+    if (trips.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="emoji">✈️</div><h2>No trips found</h2><p>Start planning your next adventure!</p><br><a class="btn btn-accent" href="screen4-create-trip.html">+ Create Trip</a></div>`;
+      return;
+    }
+    grid.innerHTML = trips.map((trip, i) => {
+      const cover = covers[i % covers.length];
+      const statusClass = `status-${trip.status || 'active'}`;
+      const statusLabel = (trip.status || 'active').charAt(0).toUpperCase() + (trip.status || 'active').slice(1);
+      const cityNames = (trip.cities || []).map(c => c.city).join(' → ') || 'No cities';
+      const tags = (trip.tags || []).slice(0, 3).map(t => `<span class="trip-tag">${t}</span>`).join('');
+      const budget = trip.totalBudget ? '₹' + Number(trip.totalBudget).toLocaleString() : 'No budget set';
+      return `
+        <div class="trip-card" onclick="openTrip(${trip.id || i})">
+          <div class="trip-cover">
+            <span>${cover}</span>
+            <span class="status-badge ${statusClass}">${statusLabel}</span>
+          </div>
+          <div class="trip-body">
+            <div class="trip-name">${trip.name}</div>
+            <div class="trip-meta">📅 ${trip.startDate || '–'} → ${trip.endDate || '–'} &nbsp;|&nbsp; 💰 ${budget}</div>
+            <div class="trip-tags">${tags}</div>
+            <div class="trip-footer">
+              <div class="trip-cities">📍 ${cityNames}</div>
+              <div class="trip-actions">
+                <button class="icon-btn" onclick="event.stopPropagation();editTrip(${trip.id || i})">✏️</button>
+                <button class="icon-btn danger" onclick="event.stopPropagation();deleteTrip(${trip.id || i})">🗑</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function setFilter(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    filterTrips();
+  }
+
+  function filterTrips() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    let trips = allTrips;
+    if (currentFilter !== 'all') trips = trips.filter(t => t.status === currentFilter);
+    if (q) trips = trips.filter(t => t.name.toLowerCase().includes(q) || (t.cities||[]).some(c => c.city.toLowerCase().includes(q)));
+    renderTrips(trips);
+  }
+
+  function openTrip(id) {
+    const trip = allTrips.find(t => t.id === id) || allTrips[id];
+    if (trip) {
+      localStorage.setItem('traveloop_current_trip', JSON.stringify(trip));
+      window.location.href = 'screen9-itinerary-view.html';
+    }
+  }
+
+  function editTrip(id) {
+    const trip = allTrips.find(t => t.id === id) || allTrips[id];
+    if (trip) {
+      localStorage.setItem('traveloop_current_trip', JSON.stringify(trip));
+      window.location.href = 'screen5-itinerary-builder.html';
+    }
+  }
+
+  function deleteTrip(id) {
+    if (!confirm('Delete this trip?')) return;
+    const idx = allTrips.findIndex(t => t.id === id);
+    if (idx !== -1) allTrips.splice(idx, 1);
+    else allTrips.splice(id, 1);
+    localStorage.setItem('traveloop_trips', JSON.stringify(allTrips));
+    renderStats();
+    filterTrips();
+  }
+
+  loadTrips();
+</script>
+</body>
+</html>
