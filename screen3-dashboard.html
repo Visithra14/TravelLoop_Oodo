@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Traveloop – Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1a3c5e;
+      --accent: #e8a87c;
+      --accent2: #f4c89a;
+      --bg: #f7f3ee;
+      --white: #ffffff;
+      --text: #1a1a2e;
+      --muted: #7a7a8a;
+      --border: #ddd8d0;
+      --card-shadow: 0 4px 24px rgba(26,60,94,0.08);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--white);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(26,60,94,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--primary); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .nav-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .nav-username { font-size: 14px; font-weight: 500; color: var(--text); }
+
+    .btn-primary {
+      padding: 10px 20px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: #0d2540; transform: translateY(-1px); }
+
+    .btn-outline {
+      padding: 10px 20px;
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-outline:hover { background: var(--primary); color: var(--white); }
+
+    /* MAIN CONTENT */
+    .main { padding: 40px; max-width: 1200px; margin: 0 auto; }
+
+    /* WELCOME BANNER */
+    .welcome-banner {
+      background: linear-gradient(135deg, #1a3c5e 0%, #0d2540 100%);
+      border-radius: 20px;
+      padding: 40px 48px;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 36px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+    .welcome-banner::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 240px; height: 240px;
+      border: 1px solid rgba(232,168,124,0.2);
+      border-radius: 50%;
+    }
+    .welcome-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; right: 200px;
+      width: 160px; height: 160px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 50%;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .welcome-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .welcome-text p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+      font-weight: 300;
+    }
+    .welcome-actions { display: flex; gap: 12px; z-index: 1; }
+    .btn-accent {
+      padding: 12px 24px;
+      background: var(--accent);
+      color: var(--primary);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      text-decoration: none;
+    }
+    .btn-accent:hover { background: var(--accent2); transform: translateY(-1px); }
+
+    /* SEARCH BAR */
+    .search-bar-wrap {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 36px;
+      animation: fadeUp 0.5s ease 0.1s both;
+    }
+    .search-bar {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 0 16px;
+      gap: 10px;
+      box-shadow: var(--card-shadow);
+    }
+    .search-bar input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      background: transparent;
+      padding: 13px 0;
+    }
+    .search-icon { font-size: 18px; color: var(--muted); }
+
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .filter-btn {
+      padding: 10px 18px;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: #eef3f8;
+    }
+
+    /* SECTION HEADERS */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .see-all {
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .see-all:hover { text-decoration: underline; }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+      animation: fadeUp 0.5s ease 0.15s both;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .stat-icon.blue { background: #eef3f8; }
+    .stat-icon.orange { background: #fdf3ea; }
+    .stat-icon.green { background: #eaf6f0; }
+    .stat-icon.purple { background: #f0eefa; }
+    .stat-info h4 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      font-family: 'Playfair Display', serif;
+    }
+    .stat-info p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* DESTINATION CARDS */
+    .destinations-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+      animation: fadeUp 0.5s ease 0.2s both;
+    }
+    .dest-card {
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .dest-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(26,60,94,0.14);
+    }
+    .dest-img {
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      position: relative;
+    }
+    .dest-badge {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: var(--accent);
+      color: var(--primary);
+      font-size: 10px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .dest-info { padding: 14px 16px; }
+    .dest-info h4 { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .dest-info p { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .dest-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dest-cost { font-size: 13px; font-weight: 500; color: var(--primary); }
+    .dest-rating { font-size: 12px; color: var(--muted); }
+
+    /* RECENT TRIPS */
+    .trips-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 36px;
+      animation: fadeUp 0.5s ease 0.25s both;
+    }
+    .trip-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .trip-card:hover { transform: translateX(4px); }
+    .trip-emoji {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .trip-info { flex: 1; }
+    .trip-info h4 { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .trip-info p { font-size: 13px; color: var(--muted); }
+    .trip-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .trip-status {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .trip-status.ongoing { background: #eaf6f0; color: #27ae60; }
+    .trip-status.upcoming { background: #eef3f8; color: var(--primary); }
+    .trip-status.completed { background: #f5f5f5; color: var(--muted); }
+    .trip-budget { font-size: 13px; font-weight: 500; color: var(--primary); }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 48px;
+      color: var(--muted);
+    }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; margin-bottom: 16px; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: var(--white);
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 999;
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: #27ae60; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">Travel<span>oop</span></div>
+  <ul class="nav-links">
+    <li><a href="screen3-dashboard.html" class="active">Home</a></li>
+    <li><a href="screen6-mytrips.html">My Trips</a></li>
+    <li><a href="screen5-itinerary-builder.html">Plan Trip</a></li>
+    <li><a href="screen11-checklist.html">Checklist</a></li>
+    <li><a href="screen9-itinerary-view.html">Itinerary</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-user" onclick="window.location.href='screen7-profile.html'">
+      <div class="nav-avatar" id="navAvatar">U</div>
+      <span class="nav-username" id="navUsername">User</span>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- WELCOME BANNER -->
+  <div class="welcome-banner">
+    <div class="welcome-text">
+      <h2 id="welcomeMsg">Welcome back! 🌍</h2>
+      <p>Where are you heading next? Plan your perfect trip today.</p>
+    </div>
+    <div class="welcome-actions">
+      <a href="screen4-create-trip.html" class="btn-accent">+ Plan New Trip</a>
+      <a href="screen6-mytrips.html" class="btn-outline" style="border-color:rgba(255,255,255,0.4);color:#fff;">My Trips</a>
+    </div>
+  </div>
+
+  <!-- SEARCH BAR -->
+  <div class="search-bar-wrap">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search destinations, cities, activities..." oninput="handleSearch()" />
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter(this,'all')">All</button>
+      <button class="filter-btn" onclick="setFilter(this,'asia')">Asia</button>
+      <button class="filter-btn" onclick="setFilter(this,'europe')">Europe</button>
+      <button class="filter-btn" onclick="setFilter(this,'americas')">Americas</button>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon blue">✈️</div>
+      <div class="stat-info">
+        <h4 id="statTrips">0</h4>
+        <p>Total Trips</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">🌆</div>
+      <div class="stat-info">
+        <h4 id="statCities">0</h4>
+        <p>Cities Planned</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">✅</div>
+      <div class="stat-info">
+        <h4 id="statCompleted">0</h4>
+        <p>Trips Completed</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple">💰</div>
+      <div class="stat-info">
+        <h4 id="statBudget">₹0</h4>
+        <p>Total Budget</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP REGIONAL SELECTIONS -->
+  <div class="section-header">
+    <h3>Top Regional Selections</h3>
+    <span class="see-all" onclick="showToast('Exploring all destinations! 🌍')">See all →</span>
+  </div>
+  <div class="destinations-grid" id="destinationsGrid">
+    <!-- Filled by JS -->
+  </div>
+
+  <!-- RECENT TRIPS -->
+  <div class="section-header">
+    <h3>Recent Trips</h3>
+    <a href="screen6-mytrips.html" class="see-all">See all →</a>
+  </div>
+  <div class="trips-list" id="tripsList">
+    <!-- Filled by JS -->
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // Sample destinations data
+  const destinations = [
+    { emoji: '🗼', name: 'Paris', country: 'France', cost: '₹85,000', rating: '⭐ 4.8', badge: 'Popular', region: 'europe', bg: '#fff5f0' },
+    { emoji: '🏯', name: 'Tokyo', country: 'Japan', cost: '₹95,000', rating: '⭐ 4.9', badge: 'Trending', region: 'asia', bg: '#f0f5ff' },
+    { emoji: '🗽', name: 'New York', country: 'USA', cost: '₹1,10,000', rating: '⭐ 4.7', badge: 'Hot', region: 'americas', bg: '#f5fff0' },
+    { emoji: '🏛️', name: 'Rome', country: 'Italy', cost: '₹78,000', rating: '⭐ 4.6', badge: 'Classic', region: 'europe', bg: '#fffaf0' },
+    { emoji: '🌴', name: 'Bali', country: 'Indonesia', cost: '₹45,000', rating: '⭐ 4.8', badge: 'Budget', region: 'asia', bg: '#f0fff5' },
+    { emoji: '🎡', name: 'London', country: 'UK', cost: '₹92,000', rating: '⭐ 4.7', badge: 'Classic', region: 'europe', bg: '#f5f0ff' },
+    { emoji: '🏖️', name: 'Maldives', country: 'Maldives', cost: '₹1,50,000', rating: '⭐ 4.9', badge: 'Luxury', region: 'asia', bg: '#f0faff' },
+    { emoji: '🌮', name: 'Mexico City', country: 'Mexico', cost: '₹65,000', rating: '⭐ 4.5', badge: 'Cultural', region: 'americas', bg: '#fff0f5' },
+  ];
+
+  let currentFilter = 'all';
+
+  function renderDestinations(filter = 'all', search = '') {
+    const grid = document.getElementById('destinationsGrid');
+    let filtered = destinations;
+    if (filter !== 'all') filtered = filtered.filter(d => d.region === filter);
+    if (search) filtered = filtered.filter(d =>
+      d.name.toLowerCase().includes(search.toLowerCase()) ||
+      d.country.toLowerCase().includes(search.toLowerCase())
+    );
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--muted)">No destinations found 🔍</div>`;
+      return;
+    }
+    grid.innerHTML = filtered.slice(0, 4).map(d => `
+      <div class="dest-card" onclick="showToast('Adding ${d.name} to your trip! 🌍')">
+        <div class="dest-img" style="background:${d.bg}">
+          ${d.emoji}
+          <span class="dest-badge">${d.badge}</span>
+        </div>
+        <div class="dest-info">
+          <h4>${d.name}</h4>
+          <p>${d.country}</p>
+          <div class="dest-meta">
+            <span class="dest-cost">${d.cost}</span>
+            <span class="dest-rating">${d.rating}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function setFilter(btn, filter) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = filter;
+    renderDestinations(filter, document.getElementById('searchInput').value);
+  }
+
+  function handleSearch() {
+    renderDestinations(currentFilter, document.getElementById('searchInput').value);
+  }
+
+  function renderTrips() {
+    const trips = JSON.parse(localStorage.getItem('traveloop_trips') || '[]');
+    const list = document.getElementById('tripsList');
+
+    // Update stats
+    document.getElementById('statTrips').textContent = trips.length;
+    const completed = trips.filter(t => t.status === 'completed').length;
+    document.getElementById('statCompleted').textContent = completed;
+    const cities = trips.reduce((sum, t) => sum + (t.sections ? t.sections.length : 0), 0);
+    document.getElementById('statCities').textContent = cities;
+    const budget = trips.reduce((sum, t) => sum + (parseInt(t.totalBudget) || 0), 0);
+    document.getElementById('statBudget').textContent = '₹' + budget.toLocaleString('en-IN');
+
+    if (trips.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">✈️</div>
+          <p>No trips yet! Start planning your first adventure.</p>
+          <a href="screen4-create-trip.html" class="btn-primary">+ Plan New Trip</a>
+        </div>`;
+      return;
+    }
+
+    const emojis = ['🌍','🏖️','🗺️','✈️','🏔️','🌴'];
+    list.innerHTML = trips.slice(-3).reverse().map((t, i) => `
+      <div class="trip-card" onclick="window.location.href='screen9-itinerary-view.html'">
+        <div class="trip-emoji">${emojis[i % emojis.length]}</div>
+        <div class="trip-info">
+          <h4>${t.name || 'Untitled Trip'}</h4>
+          <p>${t.startDate || 'Date TBD'} · ${t.sections ? t.sections.length : 0} cities</p>
+        </div>
+        <div class="trip-meta">
+          <span class="trip-status ${t.status || 'upcoming'}">${t.status || 'Upcoming'}</span>
+          <span class="trip-budget">₹${parseInt(t.totalBudget || 0).toLocaleString('en-IN')}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Load user info
+  function loadUser() {
+    const user = JSON.parse(localStorage.getItem('traveloop_current_user') || '{}');
+    if (user.firstName) {
+      document.getElementById('welcomeMsg').textContent = 'Welcome back, ' + user.firstName + '! 🌍';
+      document.getElementById('navUsername').textContent = user.firstName;
+      document.getElementById('navAvatar').textContent = user.firstName[0].toUpperCase();
+    }
+  }
+
+  // Toast
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type;
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Init
+  loadUser();
+  renderDestinations();
+  renderTrips();
+</script>
+</body>
+</html>
