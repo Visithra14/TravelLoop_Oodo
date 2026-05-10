@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – Itinerary Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#1a3c5e;--accent:#e8a87c;--light:#f7f4ef;--white:#fff;--gray:#6b7280;--border:#e5e0d8;--danger:#e05c5c;--green:#4caf80;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);color:#222;}
+  nav{background:var(--primary);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav .logo{color:var(--accent);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-decoration:none;}
+  nav a{color:#ccd6e0;text-decoration:none;font-size:.9rem;margin-left:20px;}
+  nav a:hover{color:var(--accent);}
+  .layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 56px);}
+  .sidebar{background:var(--white);border-right:1.5px solid var(--border);padding:24px 16px;position:sticky;top:0;height:calc(100vh - 56px);overflow-y:auto;}
+  .sidebar h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gray);margin-bottom:12px;}
+  .trip-info{background:var(--light);border-radius:12px;padding:14px;margin-bottom:20px;}
+  .trip-info h2{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--primary);margin-bottom:4px;}
+  .trip-info p{font-size:.82rem;color:var(--gray);}
+  .city-tab{padding:10px 14px;border-radius:10px;cursor:pointer;margin-bottom:6px;transition:.2s;border:1.5px solid transparent;}
+  .city-tab:hover{background:var(--light);}
+  .city-tab.active{background:var(--primary);color:var(--white);}
+  .city-tab .city-name{font-weight:600;font-size:.9rem;}
+  .city-tab .city-dates{font-size:.78rem;opacity:.7;}
+  .budget-meter{margin-top:20px;}
+  .budget-meter .label{display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px;}
+  .bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s;}
+  .main{padding:28px 32px;}
+  .main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+  .main-header h1{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--primary);}
+  .day-section{background:var(--white);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.05);}
+  .day-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .day-header h2{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--primary);}
+  .day-date{font-size:.82rem;color:var(--gray);}
+  .activity-list{display:flex;flex-direction:column;gap:10px;}
+  .activity-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;transition:.2s;cursor:grab;}
+  .activity-item:hover{border-color:var(--accent);}
+  .activity-item .drag-handle{color:var(--gray);font-size:1.1rem;cursor:grab;}
+  .activity-item .time-input{border:none;font-size:.85rem;color:var(--primary);font-weight:600;width:60px;background:transparent;text-align:center;}
+  .activity-item .act-icon{font-size:1.3rem;}
+  .activity-item .act-name{flex:1;font-size:.92rem;font-weight:500;}
+  .activity-item .act-cost{font-size:.85rem;color:var(--gray);width:80px;text-align:right;}
+  .activity-item .delete-act{background:none;border:none;color:var(--danger);cursor:pointer;opacity:.5;font-size:1rem;}
+  .activity-item .delete-act:hover{opacity:1;}
+  .add-activity-row{display:flex;gap:10px;margin-top:12px;}
+  .add-activity-row select,.add-activity-row input{padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;}
+  .add-activity-row input{flex:1;}
+  .add-activity-row .cost-input{width:110px;}
+  .add-activity-row button{background:var(--accent);color:var(--white);border:none;border-radius:10px;padding:9px 18px;font-weight:600;cursor:pointer;}
+  .add-day-btn{background:none;border:2px dashed var(--primary);color:var(--primary);border-radius:12px;padding:12px 24px;font-size:.95rem;font-weight:600;cursor:pointer;width:100%;margin-bottom:20px;transition:.2s;}
+  .add-day-btn:hover{background:var(--primary);color:var(--white);}
+  .save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1.5px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  .save-bar .total{font-size:.95rem;color:var(--gray);}
+  .save-bar .total strong{color:var(--primary);font-size:1.1rem;}
+  .btn{padding:11px 26px;border-radius:10px;font-size:.92rem;font-weight:600;cursor:pointer;border:none;}
+  .btn-primary{background:var(--primary);color:var(--white);}
+  .btn-accent{background:var(--accent);color:var(--white);}
+  .act-type-badge{font-size:.7rem;padding:2px 8px;border-radius:20px;background:var(--light);color:var(--gray);}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="screen3-dashboard.html">✈ Traveloop</a>
+  <div>
+    <a href="screen3-dashboard.html">Dashboard</a>
+    <a href="screen6-my-trips.html">My Trips</a>
+    <a href="screen4-create-trip.html">+ New Trip</a>
+    <a href="screen7-profile.html">Profile</a>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="trip-info" id="tripInfo">
+      <h2 id="sidebarTripName">My Trip</h2>
+      <p id="sidebarTripDates">Loading...</p>
+    </div>
+    <h3>City Stops</h3>
+    <div id="cityTabs"></div>
+    <div class="budget-meter" id="budgetMeter" style="display:none">
+      <div class="label"><span>Budget Used</span><span id="budgetPct">0%</span></div>
+      <div class="bar"><div class="bar-fill" id="budgetBar" style="width:0%"></div></div>
+      <div class="label" style="margin-top:4px"><span id="budgetUsed">₹0</span><span id="budgetTotal">/ ₹0</span></div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="main-header">
+      <h1 id="mainCityTitle">Itinerary Builder</h1>
+      <div>
+        <button class="btn btn-primary" onclick="window.location.href='screen9-itinerary-view.html'" style="margin-right:8px">View Itinerary →</button>
+      </div>
+    </div>
+
+    <div id="dayContainer"></div>
+    <button class="add-day-btn" onclick="addDay()">+ Add Day</button>
+  </div>
+</div>
+
+<div class="save-bar">
+  <div class="total">Total Activities Cost: <strong id="totalCost">₹0</strong></div>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-primary" onclick="saveItinerary()">Save Itinerary</button>
+    <button class="btn btn-accent" onclick="window.location.href='screen9-itinerary-view.html'">View Trip →</button>
+  </div>
+</div>
+
+<script>
+  const icons = {'🍽 Meal':'🍽','🏛 Sightseeing':'🏛','🛍 Shopping':'🛍','🚗 Transport':'🚗','🏨 Hotel':'🏨','🎭 Activity':'🎭','🌿 Nature':'🌿','☕ Café':'☕'};
+  let currentCityIndex = 0;
+  let itinerary = {};
+  let trip = null;
+
+  function init() {
+    trip = JSON.parse(localStorage.getItem('traveloop_current_trip') || 'null');
+    if (!trip) {
+      // Demo trip
+      trip = { name: 'Demo Trip', startDate: '2025-06-01', endDate: '2025-06-10', cities: [{city:'Paris',country:'France',arrival:'2025-06-01',departure:'2025-06-04',budget:20000},{city:'Rome',country:'Italy',arrival:'2025-06-04',departure:'2025-06-07',budget:18000}], totalBudget: 50000 };
+    }
+    document.getElementById('sidebarTripName').textContent = trip.name;
+    document.getElementById('sidebarTripDates').textContent = `${trip.startDate} → ${trip.endDate}`;
+    renderCityTabs();
+    loadItinerary();
+    if (trip.cities && trip.cities.length > 0) selectCity(0);
+    else addDay();
+  }
+
+  function renderCityTabs() {
+    const wrap = document.getElementById('cityTabs');
+    wrap.innerHTML = '';
+    if (!trip.cities || trip.cities.length === 0) {
+      wrap.innerHTML = '<p style="font-size:.85rem;color:var(--gray)">No cities added. Go back to Create Trip.</p>';
+      return;
+    }
+    trip.cities.forEach((c, i) => {
+      const div = document.createElement('div');
+      div.className = 'city-tab' + (i === 0 ? ' active' : '');
+      div.innerHTML = `<div class="city-name">${c.city}</div><div class="city-dates">${c.arrival} → ${c.departure}</div>`;
+      div.onclick = () => selectCity(i);
+      wrap.appendChild(div);
+    });
+  }
+
+  function selectCity(i) {
+    currentCityIndex = i;
+    document.querySelectorAll('.city-tab').forEach((t, idx) => t.classList.toggle('active', idx === i));
+    const city = trip.cities[i];
+    document.getElementById('mainCityTitle').textContent = `${city.city}, ${city.country}`;
+    if (!itinerary[city.city]) itinerary[city.city] = [];
+    renderDays(city);
+    updateBudgetMeter(city);
+  }
+
+  function renderDays(city) {
+    const container = document.getElementById('dayContainer');
+    container.innerHTML = '';
+    const days = itinerary[city.city];
+    if (!days || days.length === 0) { addDay(); return; }
+    days.forEach((d, i) => renderDaySection(d, i, city));
+  }
+
+  function renderDaySection(day, dayIndex, city) {
+    const container = document.getElementById('dayContainer');
+    const sec = document.createElement('div');
+    sec.className = 'day-section';
+    sec.id = `day-sec-${dayIndex}`;
+    sec.innerHTML = `
+      <div class="day-header">
+        <h2>Day ${dayIndex + 1}</h2>
+        <span class="day-date">${day.date || ''}</span>
+      </div>
+      <div class="activity-list" id="act-list-${dayIndex}"></div>
+      <div class="add-activity-row">
+        <select id="type-${dayIndex}">
+          ${Object.keys(icons).map(k=>`<option value="${k}">${k}</option>`).join('')}
+        </select>
+        <input type="text" id="name-${dayIndex}" placeholder="Activity name">
+        <input type="number" class="cost-input" id="cost-${dayIndex}" placeholder="₹ Cost">
+        <button onclick="addActivity(${dayIndex})">+ Add</button>
+      </div>
+    `;
+    container.appendChild(sec);
+    day.activities.forEach((act, ai) => renderActivity(act, dayIndex, ai));
+  }
+
+  function renderActivity(act, dayIndex, actIndex) {
+    const list = document.getElementById(`act-list-${dayIndex}`);
+    const div = document.createElement('div');
+    div.className = 'activity-item';
+    div.innerHTML = `
+      <span class="drag-handle">⠿</span>
+      <input class="time-input" type="time" value="${act.time || '09:00'}">
+      <span class="act-icon">${icons[act.type] || '📍'}</span>
+      <span class="act-name">${act.name}</span>
+      <span class="act-type-badge">${act.type.split(' ')[1] || act.type}</span>
+      <span class="act-cost">₹${Number(act.cost||0).toLocaleString()}</span>
+      <button class="delete-act" onclick="deleteActivity(${dayIndex},${actIndex})">🗑</button>
+    `;
+    list.appendChild(div);
+    updateTotalCost();
+  }
+
+  function addActivity(dayIndex) {
+    const city = trip.cities[currentCityIndex];
+    const type = document.getElementById(`type-${dayIndex}`).value;
+    const name = document.getElementById(`name-${dayIndex}`).value.trim();
+    const cost = document.getElementById(`cost-${dayIndex}`).value || 0;
+    if (!name) { alert('Enter activity name'); return; }
+    const act = { type, name, cost: Number(cost), time: '10:00' };
+    itinerary[city.city][dayIndex].activities.push(act);
+    document.getElementById(`name-${dayIndex}`).value = '';
+    document.getElementById(`cost-${dayIndex}`).value = '';
+    renderDays(city);
+    updateBudgetMeter(city);
+  }
+
+  function deleteActivity(dayIndex, actIndex) {
+    const city = trip.cities[currentCityIndex];
+    itinerary[city.city][dayIndex].activities.splice(actIndex, 1);
+    renderDays(city);
+    updateBudgetMeter(city);
+  }
+
+  function addDay() {
+    const city = trip.cities[currentCityIndex];
+    if (!city) return;
+    if (!itinerary[city.city]) itinerary[city.city] = [];
+    const dayNum = itinerary[city.city].length + 1;
+    itinerary[city.city].push({ date: '', activities: [] });
+    renderDays(city);
+  }
+
+  function updateTotalCost() {
+    let total = 0;
+    Object.values(itinerary).forEach(days => days.forEach(d => d.activities.forEach(a => total += Number(a.cost||0))));
+    document.getElementById('totalCost').textContent = '₹' + total.toLocaleString();
+  }
+
+  function updateBudgetMeter(city) {
+    const budget = Number(city.budget || 0);
+    if (!budget) { document.getElementById('budgetMeter').style.display = 'none'; return; }
+    document.getElementById('budgetMeter').style.display = 'block';
+    let used = 0;
+    (itinerary[city.city] || []).forEach(d => d.activities.forEach(a => used += Number(a.cost||0)));
+    const pct = Math.min(100, Math.round((used/budget)*100));
+    document.getElementById('budgetBar').style.width = pct + '%';
+    document.getElementById('budgetPct').textContent = pct + '%';
+    document.getElementById('budgetUsed').textContent = '₹' + used.toLocaleString();
+    document.getElementById('budgetTotal').textContent = '/ ₹' + budget.toLocaleString();
+    updateTotalCost();
+  }
+
+  function saveItinerary() {
+    const trips = JSON.parse(localStorage.getItem('traveloop_trips') || '[]');
+    const idx = trips.findIndex(t => t.id === trip.id);
+    if (trip) { trip.itinerary = itinerary; }
+    if (idx !== -1) trips[idx] = trip;
+    localStorage.setItem('traveloop_trips', JSON.stringify(trips));
+    localStorage.setItem('traveloop_current_trip', JSON.stringify(trip));
+    localStorage.setItem('traveloop_itinerary', JSON.stringify(itinerary));
+    alert('Itinerary saved!');
+  }
+
+  function loadItinerary() {
+    const saved = localStorage.getItem('traveloop_itinerary');
+    if (saved) itinerary = JSON.parse(saved);
+  }
+
+  init();
+</script>
+</body>
+</html>
