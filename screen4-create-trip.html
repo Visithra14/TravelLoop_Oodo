@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveloop – Create Trip</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#1a3c5e;--accent:#e8a87c;--light:#f7f4ef;--white:#fff;--gray:#6b7280;--border:#e5e0d8;--danger:#e05c5c;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);color:#222;}
+  nav{background:var(--primary);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+  nav .logo{color:var(--accent);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-decoration:none;}
+  nav a{color:#ccd6e0;text-decoration:none;font-size:.9rem;margin-left:20px;}
+  nav a:hover{color:var(--accent);}
+  .container{max-width:780px;margin:40px auto;padding:0 20px 60px;}
+  h1{font-family:'Playfair Display',serif;font-size:2rem;color:var(--primary);margin-bottom:6px;}
+  .subtitle{color:var(--gray);margin-bottom:32px;font-size:.95rem;}
+  .card{background:var(--white);border-radius:16px;padding:32px;box-shadow:0 2px 16px rgba(0,0,0,.06);margin-bottom:24px;}
+  .card h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--primary);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+  .card h2 span{background:var(--accent);color:var(--white);width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;font-family:'DM Sans',sans-serif;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  .form-row.full{grid-template-columns:1fr;}
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  label{font-size:.85rem;font-weight:500;color:var(--primary);}
+  input,select,textarea{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.95rem;background:var(--white);transition:.2s;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+  textarea{resize:vertical;min-height:80px;}
+  .cover-preview{width:100%;height:160px;border-radius:12px;object-fit:cover;display:none;margin-top:8px;}
+  .tag-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .tag{background:var(--light);border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:.85rem;cursor:pointer;transition:.2s;}
+  .tag.active{background:var(--primary);color:var(--white);border-color:var(--primary);}
+  .city-section{border:1.5px dashed var(--border);border-radius:12px;padding:20px;margin-bottom:16px;position:relative;}
+  .city-section .remove-city{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--danger);font-size:1.1rem;cursor:pointer;}
+  .city-section h3{font-size:.95rem;font-weight:600;color:var(--primary);margin-bottom:14px;}
+  .add-city-btn{background:none;border:2px dashed var(--accent);color:var(--accent);border-radius:12px;padding:12px 24px;font-size:.95rem;font-weight:600;cursor:pointer;width:100%;transition:.2s;}
+  .add-city-btn:hover{background:var(--accent);color:var(--white);}
+  .btn-row{display:flex;gap:12px;justify-content:flex-end;margin-top:8px;}
+  .btn{padding:12px 28px;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;border:none;transition:.2s;}
+  .btn-outline{background:none;border:2px solid var(--primary);color:var(--primary);}
+  .btn-outline:hover{background:var(--primary);color:var(--white);}
+  .btn-primary{background:var(--primary);color:var(--white);}
+  .btn-primary:hover{background:#122d47;}
+  .btn-accent{background:var(--accent);color:var(--white);}
+  .btn-accent:hover{background:#d4946a;}
+  @media(max-width:600px){.form-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="screen3-dashboard.html">✈ Traveloop</a>
+  <div>
+    <a href="screen3-dashboard.html">Dashboard</a>
+    <a href="screen6-my-trips.html">My Trips</a>
+    <a href="screen4-create-trip.html">+ New Trip</a>
+    <a href="screen7-profile.html">Profile</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>Create New Trip</h1>
+  <p class="subtitle">Plan your next adventure — add details, cities, and budget.</p>
+
+  <!-- Basic Info -->
+  <div class="card">
+    <h2><span>1</span> Basic Information</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Trip Name *</label>
+        <input type="text" id="tripName" placeholder="e.g. Europe Summer 2025">
+      </div>
+      <div class="form-group">
+        <label>Trip Type</label>
+        <select id="tripType">
+          <option value="">Select type</option>
+          <option>Solo Adventure</option>
+          <option>Couple</option>
+          <option>Family</option>
+          <option>Friends Group</option>
+          <option>Business</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Start Date *</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="form-group">
+        <label>End Date *</label>
+        <input type="date" id="endDate">
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="description" placeholder="What's this trip about?"></textarea>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group">
+        <label>Cover Photo</label>
+        <input type="file" id="coverPhoto" accept="image/*" onchange="previewCover(this)">
+        <img class="cover-preview" id="coverPreview">
+      </div>
+    </div>
+  </div>
+
+  <!-- Vibe Tags -->
+  <div class="card">
+    <h2><span>2</span> Trip Vibe</h2>
+    <div class="tag-wrap" id="tagWrap">
+      <div class="tag" onclick="toggleTag(this)">🏖 Beach</div>
+      <div class="tag" onclick="toggleTag(this)">🏔 Mountains</div>
+      <div class="tag" onclick="toggleTag(this)">🏙 City Break</div>
+      <div class="tag" onclick="toggleTag(this)">🍜 Food Tour</div>
+      <div class="tag" onclick="toggleTag(this)">🏛 Culture</div>
+      <div class="tag" onclick="toggleTag(this)">🎒 Backpacking</div>
+      <div class="tag" onclick="toggleTag(this)">💆 Wellness</div>
+      <div class="tag" onclick="toggleTag(this)">🎉 Nightlife</div>
+      <div class="tag" onclick="toggleTag(this)">🌿 Nature</div>
+      <div class="tag" onclick="toggleTag(this)">📷 Photography</div>
+    </div>
+  </div>
+
+  <!-- Cities -->
+  <div class="card">
+    <h2><span>3</span> Destinations / Cities</h2>
+    <div id="citySections"></div>
+    <button class="add-city-btn" onclick="addCity()">+ Add City Stop</button>
+  </div>
+
+  <!-- Budget -->
+  <div class="card">
+    <h2><span>4</span> Budget</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Total Budget (₹)</label>
+        <input type="number" id="totalBudget" placeholder="e.g. 50000">
+      </div>
+      <div class="form-group">
+        <label>Currency</label>
+        <select id="currency">
+          <option>INR (₹)</option>
+          <option>USD ($)</option>
+          <option>EUR (€)</option>
+          <option>GBP (£)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visibility -->
+  <div class="card">
+    <h2><span>5</span> Visibility</h2>
+    <div class="form-row full">
+      <div class="form-group">
+        <label>Who can see this trip?</label>
+        <select id="visibility">
+          <option>Private – only me</option>
+          <option>Friends – shared link</option>
+          <option>Public – anyone</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-outline" onclick="saveDraft()">Save as Draft</button>
+    <button class="btn btn-accent" onclick="createTrip()">Create Trip →</button>
+  </div>
+</div>
+
+<script>
+  let cityCount = 0;
+
+  function addCity() {
+    cityCount++;
+    const div = document.createElement('div');
+    div.className = 'city-section';
+    div.id = `city-${cityCount}`;
+    div.innerHTML = `
+      <button class="remove-city" onclick="removeCity(${cityCount})">✕</button>
+      <h3>City Stop ${cityCount}</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>City Name *</label>
+          <input type="text" placeholder="e.g. Paris">
+        </div>
+        <div class="form-group">
+          <label>Country</label>
+          <input type="text" placeholder="e.g. France">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Arrival Date</label>
+          <input type="date">
+        </div>
+        <div class="form-group">
+          <label>Departure Date</label>
+          <input type="date">
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label>City Budget (₹)</label>
+          <input type="number" placeholder="Budget for this city">
+        </div>
+      </div>
+    `;
+    document.getElementById('citySections').appendChild(div);
+  }
+
+  function removeCity(id) {
+    document.getElementById(`city-${id}`).remove();
+  }
+
+  function toggleTag(el) {
+    el.classList.toggle('active');
+  }
+
+  function previewCover(input) {
+    const file = input.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.getElementById('coverPreview');
+        img.src = e.target.result;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function gatherData(status = 'active') {
+    const cities = [];
+    document.querySelectorAll('.city-section').forEach(sec => {
+      const inputs = sec.querySelectorAll('input');
+      cities.push({
+        city: inputs[0]?.value || '',
+        country: inputs[1]?.value || '',
+        arrival: inputs[2]?.value || '',
+        departure: inputs[3]?.value || '',
+        budget: inputs[4]?.value || 0
+      });
+    });
+    const tags = [...document.querySelectorAll('.tag.active')].map(t => t.textContent.trim());
+    return {
+      id: Date.now(),
+      name: document.getElementById('tripName').value,
+      type: document.getElementById('tripType').value,
+      startDate: document.getElementById('startDate').value,
+      endDate: document.getElementById('endDate').value,
+      description: document.getElementById('description').value,
+      totalBudget: document.getElementById('totalBudget').value,
+      currency: document.getElementById('currency').value,
+      visibility: document.getElementById('visibility').value,
+      tags,
+      cities,
+      status,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  function saveDraft() {
+    if (!document.getElementById('tripName').value) { alert('Please enter a trip name'); return; }
+    const trip = gatherData('draft');
+    const trips = JSON.parse(localStorage.getItem('traveloop_trips') || '[]');
+    trips.push(trip);
+    localStorage.setItem('traveloop_trips', JSON.stringify(trips));
+    alert('Draft saved!');
+  }
+
+  function createTrip() {
+    if (!document.getElementById('tripName').value) { alert('Please enter a trip name'); return; }
+    if (!document.getElementById('startDate').value) { alert('Please select start date'); return; }
+    const trip = gatherData('active');
+    const trips = JSON.parse(localStorage.getItem('traveloop_trips') || '[]');
+    trips.push(trip);
+    localStorage.setItem('traveloop_trips', JSON.stringify(trips));
+    localStorage.setItem('traveloop_current_trip', JSON.stringify(trip));
+    alert('Trip created!');
+    window.location.href = 'screen5-itinerary-builder.html';
+  }
+
+  // Add one city by default
+  addCity();
+</script>
+</body>
+</html>
